@@ -1,56 +1,55 @@
 import { isPlainObject, isString } from './common';
 
 /**
- * 转换 CSV 为 JSON
+ * 将 CSV 数据转换为 JSON 格式。
  *
- * @param data
- * @param delimiter
+ * @param {string} data - 要转换的 CSV 数据。
+ * @param {string} [delimiter=','] - CSV 数据中使用的分隔符。
+ * @returns {Array<Object>} - 表示 JSON 数据的对象数组。
+ *
+ * @example
+ * const jsonData = CSVtoJSON('name,age\nAlice,30\nBob,25');
+ * // 输出: [{ name: 'Alice', age: '30' }, { name: 'Bob', age: '25' }]
  */
 export function CSVtoJSON(data = '', delimiter = ',') {
-  if (isString(data)) {
-    if (data.length === 0) {
-      return {};
-    }
-    const firstLineIndex = data.indexOf('\n');
-    const titles = data.slice(0, firstLineIndex).split(delimiter);
-    const restData = data.slice(firstLineIndex + 1);
-
-    return restData.split('\n').map((v) => {
-      const values = v.split(delimiter);
-
-      return titles.reduce((prev: Record<any, any>, curr, index) => {
-        prev[curr] = values[index];
-        return prev;
+  if (isString(data) && data.length > 0) {
+    const [titlesLine, ...restData] = data.split('\n');
+    const titles = titlesLine.split(delimiter);
+    
+    return restData.map((row) => {
+      const values = row.split(delimiter);
+      return titles.reduce((obj:Record<any, any>, title, index) => {
+        obj[title] = values[index];
+        return obj;
       }, {});
     });
   }
-
-  return {};
+  return [];
 }
 
 /**
- * 转换 JSON 为 CSV
+ * 将对象数组转换为 CSV 格式。
  *
- * @param arr
- * @param columns
- * @param delimiter
+ * @param {Array<Object>} arr - 要转换为 CSV 的对象数组。
+ * @param {Array<string>} columns - 要包含在 CSV 中的列。
+ * @param {string} [delimiter=','] - 在 CSV 输出中使用的分隔符。
+ * @returns {string} - 生成的 CSV 字符串。
+ *
+ * @throws {TypeError} - 如果数组中的任何元素不是对象，则抛出错误。
+ *
+ * @example
+ * const csvData = JSONtoCSV([{ name: 'Alice', age: 30 }, { name: 'Bob', age: 25 }], ['name', 'age']);
+ * // 输出: 'name,age\nAlice,30\nBob,25'
  */
 export function JSONtoCSV(arr = [], columns = [], delimiter = ',') {
-  for (let i = 0; i < arr.length; i++) {
-    const item = arr[i];
-    if (!isPlainObject(item)) {
-      throw new TypeError('数组元素必须是对象');
-    }
+  if (arr.some(item => !isPlainObject(item))) {
+    throw new TypeError('数组元素必须是对象');
   }
-
-  return [
-    columns.join(delimiter),
-    ...arr.map((obj) => {
-      return columns.reduce((prev, curr) => {
-        return `${prev}${prev.length ? delimiter : ''}${obj[curr]}`;
-      }, '');
-    }),
-  ]
-    .join('\n')
-    .trim();
+  
+  const header = columns.join(delimiter);
+  const rows = arr.map((obj) =>
+    columns.map((column) => obj[column] ?? '').join(delimiter)
+  );
+  
+  return [header, ...rows].join('\n').trim();
 }

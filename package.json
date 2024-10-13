@@ -14,7 +14,7 @@
     "clean": "rimraf dist",
     "dev": "cross-env NODE_ENV=development rollup --config rollup.config.js --watch",
     "prettier": "prettier --write ./src/**/*",
-    "test": "jest && http-server -c-1"
+    "test": "jest"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.0",
