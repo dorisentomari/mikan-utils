@@ -10,7 +10,9 @@ export function deepGet(obj = {}, keys: string) {
     return null;
   }
 
-  if (!isArray(keys) || keys.length === 0) {
+  keys = String(keys);
+  
+  if (keys.length === 0) {
     return null;
   }
 

@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === 'development') {
 		host: 'localhost',
 		port: 9700,
 		openPage: '/index.html',
-		contentBase: ['dist', 'public'],
+		contentBase: ['dist', 'templates'],
 	}));
 }
 

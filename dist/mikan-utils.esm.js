@@ -42,122 +42,243 @@ typeof SuppressedError === "function" ? SuppressedError : function (error, suppr
 };
 
 /* 基础数据类型 */
+/**
+ * 检查值是否为布尔类型。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是布尔类型则返回 true，否则返回 false。
+ */
 function isBoolean(value) {
-    return Object.prototype.toString.call(value) === '[object Boolean]';
+    return typeof value === 'boolean';
 }
+/**
+ * 检查值是否为数字类型。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是数字类型则返回 true，否则返回 false。
+ */
 function isNumber(value) {
-    return Object.prototype.toString.call(value) === '[object Number]';
+    return typeof value === 'number' && !isNaN(value);
 }
+/**
+ * 检查值是否为字符串类型。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是字符串类型则返回 true，否则返回 false。
+ */
 function isString(value) {
-    return Object.prototype.toString.call(value) === '[object String]';
+    return typeof value === 'string';
 }
+/**
+ * 检查值是否为 undefined。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是 undefined 则返回 true，否则返回 false。
+ */
 function isUndefined(value) {
-    return Object.prototype.toString.call(value) === '[object Undefined]';
+    return typeof value === 'undefined';
 }
+/**
+ * 检查值是否为 null。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是 null 则返回 true，否则返回 false。
+ */
 function isNull(value) {
-    return Object.prototype.toString.call(value) === '[object Null]';
+    return value === null;
 }
+/**
+ * 检查值是否为 Symbol 类型。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是 Symbol 类型则返回 true，否则返回 false。
+ */
 function isSymbol(value) {
-    return Object.prototype.toString.call(value) === '[object Symbol]';
+    return typeof value === 'symbol';
 }
+/**
+ * 检查值是否为 NaN。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是 NaN 则返回 true，否则返回 false。
+ */
 function isNaN(value) {
     return isNumber(value) && value !== +value;
 }
+/**
+ * 检查值是否为整数。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是整数则返回 true，否则返回 false。
+ */
 function isInt(value) {
-    return isNumber(value) && value % 1 === 0;
+    return isNumber(value) && Number.isInteger(value);
 }
-// 偶数
+/**
+ * 检查值是否为偶数。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是偶数则返回 true，否则返回 false。
+ */
 function isEven(value) {
     return isNumber(value) && value % 2 === 0;
 }
-// 奇数
+/**
+ * 检查值是否为奇数。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是奇数则返回 true，否则返回 false。
+ */
 function isOdd(value) {
     return isNumber(value) && value % 2 === 1;
 }
+/**
+ * 检查值是否为正数。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是正数则返回 true，否则返回 false。
+ */
 function isPositiveNumber(value) {
     return isNumber(value) && value > 0;
 }
+/**
+ * 检查值是否为负数。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是负数则返回 true，否则返回 false。
+ */
 function isNegativeNumber(value) {
     return isNumber(value) && value < 0;
 }
+/**
+ * 检查值是否为基本数据类型。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是基本数据类型则返回 true，否则返回 false。
+ */
 function isBaseType(value) {
     var methods = [isNumber, isString, isBoolean, isUndefined, isNull, isSymbol];
-    for (var i = 0; i < methods.length; i++) {
-        var method = methods[i];
-        if (method(value)) {
-            return true;
-        }
-    }
-    return false;
+    return methods.some(function (method) { return method(value); });
 }
 /* 其他数据类型 */
+/**
+ * 检查值是否为 Map 类型。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是 Map 类型则返回 true，否则返回 false。
+ */
 function isMap(value) {
     return Object.prototype.toString.call(value) === '[object Map]';
 }
+/**
+ * 检查值是否为 WeakMap 类型。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是 WeakMap 类型则返回 true，否则返回 false。
+ */
 function isWeakMap(value) {
     return Object.prototype.toString.call(value) === '[object WeakMap]';
 }
+/**
+ * 检查值是否为 Set 类型。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是 Set 类型则返回 true，否则返回 false。
+ */
 function isSet(value) {
     return Object.prototype.toString.call(value) === '[object Set]';
 }
+/**
+ * 检查值是否为 WeakSet 类型。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是 WeakSet 类型则返回 true，否则返回 false。
+ */
 function isWeakSet(value) {
     return Object.prototype.toString.call(value) === '[object WeakSet]';
 }
+/**
+ * 检查值是否为数组。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是数组则返回 true，否则返回 false。
+ */
 function isArray(value) {
-    return Object.prototype.toString.call(value) === '[object Array]';
+    return Array.isArray(value);
 }
+/**
+ * 检查数组是否为空。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是空数组则返回 true，否则返回 false。
+ */
 function isEmptyArray(value) {
     return isArray(value) && value.length === 0;
 }
+/**
+ * 检查值是否为普通对象。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是普通对象则返回 true，否则返回 false。
+ */
 function isPlainObject(value) {
-    return Object.prototype.toString.call(value) === '[object Object]';
+    return Object.prototype.toString.call(value) === '[object Object]' && value !== null;
 }
+/**
+ * 检查对象是否为空。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是空对象则返回 true，否则返回 false。
+ */
 function isEmptyObject(value) {
     return isPlainObject(value) && Object.keys(value).length === 0;
 }
-// 包含文件、日期、函数、正则等对象
+/**
+ * 检查值是否为对象（包括文件、日期、函数、正则等）。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是对象则返回 true，否则返回 false。
+ */
 function isObject(value) {
-    return typeof value === 'object';
+    return value !== null && typeof value === 'object';
 }
+/**
+ * 检查值是否为日期类型。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是日期类型则返回 true，否则返回 false。
+ */
 function isDate(value) {
     return Object.prototype.toString.call(value) === '[object Date]';
 }
+/**
+ * 检查值是否为函数。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是函数则返回 true，否则返回 false。
+ */
 function isFunction(value) {
-    return Object.prototype.toString.call(value) === '[object Function]';
+    return typeof value === 'function';
 }
+/**
+ * 检查值是否为有效日期。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是有效日期则返回 true，否则返回 false。
+ */
 function isValidDate(value) {
-    try {
-        return new Date(value).toString() !== 'Invalid Date';
-    }
-    catch (err) {
-        return false;
-    }
+    return !isNaN(Date.parse(value));
 }
+/**
+ * 检查值是否为错误对象。
+ * @param {any} value - 要检查的值。
+ * @returns {boolean} - 如果值是错误对象则返回 true，否则返回 false。
+ */
 function isError(value) {
     return Object.prototype.toString.call(value) === '[object Error]';
 }
-function isHTMLElement(element) {
-    var div = document.createElement('div');
-    try {
-        div.appendChild(element.cloneNode(true));
-        return element.nodeType === 1;
-    }
-    catch (e) {
-        return false;
-    }
+/**
+ * 检查值是否为 HTML 元素。
+ * @param {any} element - 要检查的值。
+ * @returns {boolean} - 如果值是 HTML 元素则返回 true，否则返回 false。
+ */
+function isHTMLElement$1(element) {
+    return element instanceof HTMLElement;
 }
+/**
+ * 检查当前环境是否为浏览器。
+ * @returns {boolean} - 如果当前环境为浏览器则返回 true，否则返回 false。
+ */
 function isBrowser() {
-    try {
-        return typeof window === 'object' && typeof document === 'object' && document.nodeType === 9;
-    }
-    catch (err) {
-        return false;
-    }
+    return typeof window === 'object' && typeof document === 'object' && document.nodeType === 9;
 }
+/**
+ * 检查当前环境是否为 Node.js。
+ * @returns {boolean} - 如果当前环境为 Node.js 则返回 true，否则返回 false。
+ */
 function isNode() {
-    return (Object.prototype.toString.call(typeof process !== 'undefined' ? process : 0) ===
-        '[object process]');
+    return typeof process === 'object' && Object.prototype.toString.call(process) === '[object process]';
 }
+/**
+ * 检查年份是否为闰年。
+ * @param {number} year - 要检查的年份。
+ * @returns {boolean} - 如果年份是闰年则返回 true，否则返回 false。
+ */
 function isLeapYear(year) {
     if (!isNumber(year)) {
         return false;
@@ -165,6 +286,9 @@ function isLeapYear(year) {
     return year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0);
 }
 var ua = window.navigator.userAgent;
+/**
+ * 当前环境信息映射。
+ */
 var envMap = {
     isPC: !ua.includes('Android') && !ua.includes('iPhone'),
     isMobile: ua.includes('Android') || ua.includes('iPhone'),
@@ -186,7 +310,7 @@ var common = /*#__PURE__*/Object.freeze({
     isError: isError,
     isEven: isEven,
     isFunction: isFunction,
-    isHTMLElement: isHTMLElement,
+    isHTMLElement: isHTMLElement$1,
     isInt: isInt,
     isLeapYear: isLeapYear,
     isMap: isMap,
@@ -371,6 +495,9 @@ function calculateArraySum(arr, field) {
  * @param arr2
  */
 function compareArray(arr1, arr2) {
+    if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
+        return false;
+    }
     var len1 = arr1.length;
     var len2 = arr2.length;
     if (len1 === len2 && len1 === 0) {
@@ -424,6 +551,9 @@ function union(arr1, arr2) {
  */
 function findDuplicateElements(arr) {
     var result = [];
+    if (!Array.isArray(arr)) {
+        return [];
+    }
     if (arr.length === 0) {
         return result;
     }
@@ -441,17 +571,6 @@ function findDuplicateElements(arr) {
     return Array.from(repeatSet);
 }
 /**
- * foreach 遍历。内部使用 for 遍历；
- *
- * @param obj
- * @param cb
- */
-function foreach(obj, cb) {
-    Object.keys(obj).forEach(function (item, index) {
-        cb(item, obj[item], index, obj);
-    });
-}
-/**
  * 合并两个数组；
  * @param arr1 - 数组1
  * @param arr2 - 数组2
@@ -459,10 +578,82 @@ function foreach(obj, cb) {
  */
 function mergeTwoArray(arr1, arr2, removeRepetition) {
     if (removeRepetition === void 0) { removeRepetition = false; }
+    if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
+        return [];
+    }
     if (removeRepetition) {
         return Array.from(new Set(__spreadArray(__spreadArray([], arr1, true), arr2, true)));
     }
     return __spreadArray(__spreadArray([], arr1, true), arr2, true);
+}
+/**
+ * 数组扁平化
+ * @param arr
+ * @param childrenKey
+ */
+function flattenArray(arr, childrenKey) {
+    if (childrenKey === void 0) { childrenKey = 'children'; }
+    var result = [];
+    if (!Array.isArray(arr)) {
+        return result;
+    }
+    arr.forEach(function (item) {
+        if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+            // 对象类型元素，取出 children 并递归处理，之后去掉 childrenKey 并加入结果
+            var children = item[childrenKey];
+            var newItem = __assign({}, item);
+            delete newItem[childrenKey];
+            result.push(newItem);
+            if (Array.isArray(children)) {
+                result = result.concat(flattenArray(children, childrenKey));
+            }
+        }
+        else if (Array.isArray(item)) {
+            // 如果元素是数组，递归处理
+            result = result.concat(flattenArray(item, childrenKey));
+        }
+        else {
+            // 直接是基本类型的元素
+            result.push(item);
+        }
+    });
+    // 去重逻辑，使用 Set 来存储基本类型和 JSON 序列化后的对象来避免重复
+    return unique(result);
+}
+/**
+ * 数组去重
+ * @param arr
+ */
+function unique(arr) {
+    if (!Array.isArray(arr)) {
+        return [];
+    }
+    var seen = new Set();
+    return arr.filter(function (item) {
+        var serialized = typeof item === 'object' ? JSON.stringify(item) : item;
+        if (seen.has(serialized)) {
+            return false;
+        }
+        seen.add(serialized);
+        return true;
+    });
+}
+/**
+ * 把数组通过某一个字段转换成 map
+ * @param list
+ * @param field
+ */
+function transformListToMap(list, field) {
+    if (Array.isArray(list) && field) {
+        return list.reduce(function (prev, curr) {
+            var value = curr[field];
+            if (value) {
+                prev[value] = curr;
+            }
+            return prev;
+        }, {});
+    }
+    return {};
 }
 
 var array = /*#__PURE__*/Object.freeze({
@@ -475,138 +666,123 @@ var array = /*#__PURE__*/Object.freeze({
     compareArray: compareArray,
     differenceSet: differenceSet,
     findDuplicateElements: findDuplicateElements,
-    foreach: foreach,
+    flattenArray: flattenArray,
     intersection: intersection,
     mergeTwoArray: mergeTwoArray,
-    union: union
+    transformListToMap: transformListToMap,
+    union: union,
+    unique: unique
 });
 
 /**
- * dom 选择器
+ * DOM 选择器
  *
- * @param selector
+ * @param {string} selector - 选择器字符串，支持 ID、类名和标签名。
+ * @returns {HTMLElement | NodeList | null} 返回匹配的单个元素、NodeList 或 null。
  */
 function $selector(selector) {
     if (!selector) {
         return null;
     }
-    var type = selector.substring(0, 1);
-    if (type === '#') {
-        if (document.querySelector) {
-            return document.querySelector(selector);
-        }
-    }
-    else if (type === '.') {
-        if (document.querySelectorAll) {
-            return document.querySelectorAll(selector);
-        }
-        return document.getElementsByClassName(selector.substring(1));
-    }
-    else {
-        if (document.querySelectorAll) {
-            return document.querySelectorAll(selector);
-        }
-        return document.getElementsByTagName(selector);
-    }
+    // 使用 querySelector 或 querySelectorAll
+    // @ts-ignore
+    return selector.startsWith('#')
+        ? document.querySelector(selector) // 返回单一元素
+        : document.querySelectorAll(selector); // 返回 NodeList
 }
 /**
- * 判断元素是否有某个class
+ * 判断元素是否有某个 class
  *
- * @param elem
- * @param className
+ * @param {HTMLElement} elem - 要检查的元素。
+ * @param {string} className - 要检查的类名。
+ * @returns {boolean} 如果元素具有指定的类名，则返回 true；否则返回 false。
+ * @throws {Error} 如果未找到元素，则抛出错误。
  */
 function hasClassName(elem, className) {
-    if (elem) {
-        return elem.className.trim().indexOf(className) > -1;
-    }
-    throw new Error("cannot find ".concat(elem, " element"));
+    if (!elem)
+        throw new Error("cannot find ".concat(elem, " element"));
+    return elem.classList.contains(className);
 }
 /**
- * 给某个元素添加class
+ * 给某个元素添加 class
  *
- * @param elem
- * @param name
+ * @param {HTMLElement} elem - 要添加类名的元素。
+ * @param {string} name - 要添加的类名。
  */
 function addClassName(elem, name) {
     if (!hasClassName(elem, name)) {
-        var className = elem.className.trim();
-        if (className) {
-            elem.className += " ".concat(name);
-        }
-        else {
-            elem.className += name;
-        }
+        elem.classList.add(name);
     }
 }
 /**
- * 删除某个元素的class
+ * 删除某个元素的 class
  *
- * @param elem
- * @param name
+ * @param {HTMLElement} elem - 要删除类名的元素。
+ * @param {string} name - 要删除的类名。
  */
 function deleteClassName(elem, name) {
     if (hasClassName(elem, name)) {
-        var reg = new RegExp('(\\s|^)' + name + '(\\s|$)');
-        elem.className = elem.className.replace(reg, ' ').trim();
+        elem.classList.remove(name);
     }
 }
 /**
- * 替换某个元素的class
+ * 替换某个元素的 class
  *
- * @param elem
- * @param newClassName
- * @param oldClassName
+ * @param {HTMLElement} elem - 要操作的元素。
+ * @param {string} newClassName - 要添加的新类名。
+ * @param {string} oldClassName - 要删除的旧类名。
  */
 function replaceClassName(elem, newClassName, oldClassName) {
     deleteClassName(elem, oldClassName);
     addClassName(elem, newClassName);
 }
 /**
- * @description 判断是否有效 dom
- * @param dom
+ * 判断是否有效 HTML Element
+ *
+ * @param {any} dom - 要检查的对象。
+ * @returns {boolean} 如果是有效的 HTML Element，则返回 true；否则返回 false。
  */
-function isValidDom(dom) {
-    if (!dom) {
-        return false;
-    }
-    if (Array.isArray(dom)) {
-        return dom;
-    }
-    if (typeof HTMLElement === 'object') {
-        return dom instanceof HTMLElement;
-    }
-    return dom && typeof dom === 'object' && dom.nodeType === 1 && typeof dom.nodeName === 'string';
+function isHTMLElement(dom) {
+    return dom instanceof HTMLElement;
 }
 /**
- * @description 通用设置样式
- * @param selector {string | HTMLElement}
- * @param style {Object}
+ * 判断是否是指定的 HTMLElement
+ *
+ * @param {any} element - 要检查的对象。
+ * @param {string} tagName - 要匹配的标签名。
+ * @returns {boolean} 如果元素是指定的 HTML Element，则返回 true；否则返回 false。
  */
-function setDomStyle(selector, style) {
+function isSpecificHTMLElement(element, tagName) {
+    return isHTMLElement(element) && element.tagName.toLowerCase() === tagName.toLowerCase();
+}
+/**
+ * 通用设置样式
+ *
+ * @param {string | HTMLElement} selector - 选择器字符串或 HTML 元素。
+ * @param {Record<string, string>} [style={}] - 要设置的样式对象，格式为 { 'key': 'value' }。
+ */
+function setStyle(selector, style) {
     if (style === void 0) { style = {}; }
     if (!selector) {
         return;
     }
-    var dom = null;
-    if (typeof selector === 'string') {
-        dom = document.querySelector(selector);
-    }
-    else if (isValidDom(selector)) {
-        dom = selector;
-    }
-    if (!isValidDom(dom)) {
+    var dom = typeof selector === 'string' ? document.querySelector(selector) : isHTMLElement(selector) ? selector : null;
+    // 如果没有找到有效的 HTML 元素，则返回
+    if (!isHTMLElement(dom))
         return;
-    }
-    Object.keys(style).forEach(function (key) {
-        dom.style[key] = style[key];
+    // 设置样式
+    Object.entries(style).forEach(function (_a) {
+        var key = _a[0], value = _a[1];
+        dom.style[key] = value; // 消除 TypeScript 类型警告
     });
 }
 /**
- * 通过 dom 设置样式
- * @param selector
- * @param cssText
+ * 通过 DOM 设置样式
+ *
+ * @param {string} selector - 选择器字符串，选择要设置样式的元素。
+ * @param {string} cssText - 要应用的 CSS 样式文本。
  */
-function setDomListStyleCssText(selector, cssText) {
+function setStyleCssText(selector, cssText) {
     var domList = $selector(selector);
     if (Array.isArray(domList)) {
         domList.forEach(function (domItem) {
@@ -615,73 +791,46 @@ function setDomListStyleCssText(selector, cssText) {
     }
 }
 /**
- * @description 通用设置属性
- * @param dom {HTMLElement}
- * @param attributes {Object}
+ * 通用设置属性
+ *
+ * @param {HTMLElement} dom - 要设置属性的元素。
+ * @param {Record<string, any>} [attributes={}] - 属性对象，格式为 { 'key': 'value' }。
  */
 function setDomAttributes(dom, attributes) {
     if (attributes === void 0) { attributes = {}; }
     if (!dom) {
         return;
     }
-    Object.keys(attributes).forEach(function (key) {
-        dom[key] = attributes[key];
+    Object.entries(attributes).forEach(function (_a) {
+        var key = _a[0], value = _a[1];
+        dom.setAttribute(key, value);
     });
 }
 /**
- * @description dom 添加类名
- * @param dom
- * @param className
- */
-function domAddClassName(dom, className) {
-    if (isValidDom(dom)) {
-        dom.classList.add(className);
-    }
-}
-/**
- * @description dom 删除类名
- * @param dom
- * @param className
- */
-function domRemoveClassName(dom, className) {
-    if (isValidDom(dom)) {
-        dom.classList.remove(className);
-    }
-}
-/**
- * @description 删除 dom
- * @param className
+ * 删除 DOM
+ *
+ * @param {string} className - 选择器字符串，表示要删除的元素的类名。
  */
 function removeDom(className) {
     try {
         var childDomList = document.querySelectorAll(className.trim());
-        for (var i = 0; i < childDomList.length; i++) {
-            var childDom = childDomList[i];
+        childDomList.forEach(function (childDom) {
             if (childDom.parentNode) {
                 childDom.parentNode.removeChild(childDom);
             }
-        }
+        });
     }
     catch (e) {
         console.log('e', e);
     }
 }
 /**
- * @description 检查 dom 包含哪个类名
- * @param dom
- * @param className
- */
-function domIsContainsClassName(dom, className) {
-    if (isValidDom(dom)) {
-        return dom.classList.contains(className);
-    }
-    return false;
-}
-/**
- * @description 创建 dom
- * @param elem {string}
- * @param attributes {Object}
- * @param style {Object}
+ * 创建 DOM
+ *
+ * @param {string} elem - 要创建的元素的标签名。
+ * @param {Record<string, any>} [attributes={}] - 要设置的属性对象，格式为 { 'key': 'value' }。
+ * @param {Record<string, string>} [style={}] - 要设置的样式对象，格式为 { 'key': 'value' }。
+ * @returns {HTMLElement | null} 返回创建的元素或 null。
  */
 function createElement(elem, attributes, style) {
     if (attributes === void 0) { attributes = {}; }
@@ -694,9 +843,78 @@ function createElement(elem, attributes, style) {
         setDomAttributes(dom, attributes);
     }
     if (isPlainObject(style)) {
-        setDomStyle(dom, style);
+        setStyle(dom, style);
     }
     return dom;
+}
+/**
+ * 删除 localStorage 里以某个前缀开头的数据
+ *
+ * @param {string} prefix - 要删除的前缀。
+ */
+function removeLocalStorageByPrefix(prefix) {
+    try {
+        if (!isBrowser()) {
+            Object.keys(localStorage)
+                .filter(function (key) { return key.startsWith(prefix); })
+                .forEach(function (key) {
+                safeRemoveLocalStorage(key);
+            });
+        }
+    }
+    catch (err) {
+        console.error(err);
+    }
+}
+/**
+ * 安全的获取 localStorage
+ *
+ * @param {string} key - 要获取的键。
+ * @returns {any} 返回解析后的值，如果解析失败则返回原始字符串。
+ */
+function safeGetLocalStorage(key) {
+    var value = localStorage.getItem(key) || '';
+    try {
+        return JSON.parse(value);
+    }
+    catch (error) {
+        console.error(error);
+        return value; // 返回原始字符串
+    }
+}
+/**
+ * 安全的设置 localStorage
+ *
+ * @param {string} key - 要设置的键。
+ * @param {any} value - 要设置的值，可以是对象或其他类型。
+ * @param {string} [removePrefix=''] - 如果设置失败，删除的前缀。
+ */
+function safeSetLocalStorage(key, value, removePrefix) {
+    if (removePrefix === void 0) { removePrefix = ''; }
+    try {
+        var finalValue = typeof value === 'object' ? JSON.stringify(value) : value;
+        localStorage.setItem(key, finalValue);
+    }
+    catch (error) {
+        console.error(error);
+        if (removePrefix) {
+            removeLocalStorageByPrefix(removePrefix);
+            localStorage.setItem(key, value);
+        }
+    }
+}
+/**
+ * 安全的删除 localStorage
+ *
+ * @param {string} key - 要删除的键。
+ */
+function safeRemoveLocalStorage(key) {
+    try {
+        localStorage.removeItem(key);
+    }
+    catch (error) {
+        console.error(error);
+    }
 }
 
 var browser = /*#__PURE__*/Object.freeze({
@@ -705,16 +923,18 @@ var browser = /*#__PURE__*/Object.freeze({
     addClassName: addClassName,
     createElement: createElement,
     deleteClassName: deleteClassName,
-    domAddClassName: domAddClassName,
-    domIsContainsClassName: domIsContainsClassName,
-    domRemoveClassName: domRemoveClassName,
     hasClassName: hasClassName,
-    isValidDom: isValidDom,
+    isHTMLElement: isHTMLElement,
+    isSpecificHTMLElement: isSpecificHTMLElement,
     removeDom: removeDom,
+    removeLocalStorageByPrefix: removeLocalStorageByPrefix,
     replaceClassName: replaceClassName,
+    safeGetLocalStorage: safeGetLocalStorage,
+    safeRemoveLocalStorage: safeRemoveLocalStorage,
+    safeSetLocalStorage: safeSetLocalStorage,
     setDomAttributes: setDomAttributes,
-    setDomListStyleCssText: setDomListStyleCssText,
-    setDomStyle: setDomStyle
+    setStyle: setStyle,
+    setStyleCssText: setStyleCssText
 });
 
 /**
@@ -854,7 +1074,8 @@ function deepGet(obj, keys) {
     if (isEmptyObject(obj)) {
         return null;
     }
-    if (!isArray(keys) || keys.length === 0) {
+    keys = String(keys);
+    if (keys.length === 0) {
         return null;
     }
     var fields = keys.split('.');

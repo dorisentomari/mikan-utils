@@ -1,4 +1,4 @@
-import { __spreadArray } from './node_modules/tslib/tslib.es6.js';
+import { __spreadArray, __assign } from './node_modules/tslib/tslib.es6.js';
 import { isArray, isNumber, isPlainObject } from './common.js';
 
 /**
@@ -164,6 +164,9 @@ function calculateArraySum(arr, field) {
  * @param arr2
  */
 function compareArray(arr1, arr2) {
+    if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
+        return false;
+    }
     var len1 = arr1.length;
     var len2 = arr2.length;
     if (len1 === len2 && len1 === 0) {
@@ -217,6 +220,9 @@ function union(arr1, arr2) {
  */
 function findDuplicateElements(arr) {
     var result = [];
+    if (!Array.isArray(arr)) {
+        return [];
+    }
     if (arr.length === 0) {
         return result;
     }
@@ -234,17 +240,6 @@ function findDuplicateElements(arr) {
     return Array.from(repeatSet);
 }
 /**
- * foreach 遍历。内部使用 for 遍历；
- *
- * @param obj
- * @param cb
- */
-function foreach(obj, cb) {
-    Object.keys(obj).forEach(function (item, index) {
-        cb(item, obj[item], index, obj);
-    });
-}
-/**
  * 合并两个数组；
  * @param arr1 - 数组1
  * @param arr2 - 数组2
@@ -252,11 +247,83 @@ function foreach(obj, cb) {
  */
 function mergeTwoArray(arr1, arr2, removeRepetition) {
     if (removeRepetition === void 0) { removeRepetition = false; }
+    if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
+        return [];
+    }
     if (removeRepetition) {
         return Array.from(new Set(__spreadArray(__spreadArray([], arr1, true), arr2, true)));
     }
     return __spreadArray(__spreadArray([], arr1, true), arr2, true);
 }
+/**
+ * 数组扁平化
+ * @param arr
+ * @param childrenKey
+ */
+function flattenArray(arr, childrenKey) {
+    if (childrenKey === void 0) { childrenKey = 'children'; }
+    var result = [];
+    if (!Array.isArray(arr)) {
+        return result;
+    }
+    arr.forEach(function (item) {
+        if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+            // 对象类型元素，取出 children 并递归处理，之后去掉 childrenKey 并加入结果
+            var children = item[childrenKey];
+            var newItem = __assign({}, item);
+            delete newItem[childrenKey];
+            result.push(newItem);
+            if (Array.isArray(children)) {
+                result = result.concat(flattenArray(children, childrenKey));
+            }
+        }
+        else if (Array.isArray(item)) {
+            // 如果元素是数组，递归处理
+            result = result.concat(flattenArray(item, childrenKey));
+        }
+        else {
+            // 直接是基本类型的元素
+            result.push(item);
+        }
+    });
+    // 去重逻辑，使用 Set 来存储基本类型和 JSON 序列化后的对象来避免重复
+    return unique(result);
+}
+/**
+ * 数组去重
+ * @param arr
+ */
+function unique(arr) {
+    if (!Array.isArray(arr)) {
+        return [];
+    }
+    var seen = new Set();
+    return arr.filter(function (item) {
+        var serialized = typeof item === 'object' ? JSON.stringify(item) : item;
+        if (seen.has(serialized)) {
+            return false;
+        }
+        seen.add(serialized);
+        return true;
+    });
+}
+/**
+ * 把数组通过某一个字段转换成 map
+ * @param list
+ * @param field
+ */
+function transformListToMap(list, field) {
+    if (Array.isArray(list) && field) {
+        return list.reduce(function (prev, curr) {
+            var value = curr[field];
+            if (value) {
+                prev[value] = curr;
+            }
+            return prev;
+        }, {});
+    }
+    return {};
+}
 
-export { arrayify, calculateArrayAverage, calculateArrayMaxValue, calculateArrayMinValue, calculateArraySum, compareArray, differenceSet, findDuplicateElements, foreach, intersection, mergeTwoArray, union };
+export { arrayify, calculateArrayAverage, calculateArrayMaxValue, calculateArrayMinValue, calculateArraySum, compareArray, differenceSet, findDuplicateElements, flattenArray, intersection, mergeTwoArray, transformListToMap, union, unique };
 //# sourceMappingURL=array.js.map

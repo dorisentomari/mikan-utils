@@ -1,4 +1,4 @@
-import { isEmptyObject, isArray } from './common.js';
+import { isEmptyObject } from './common.js';
 
 /**
  * 深度获取对象的值
@@ -10,7 +10,8 @@ function deepGet(obj, keys) {
     if (isEmptyObject(obj)) {
         return null;
     }
-    if (!isArray(keys) || keys.length === 0) {
+    keys = String(keys);
+    if (keys.length === 0) {
         return null;
     }
     var fields = keys.split('.');

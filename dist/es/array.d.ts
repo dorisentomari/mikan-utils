@@ -140,16 +140,26 @@ export declare function union<T>(arr1: Array<T>, arr2: Array<T>): Array<T>;
  */
 export declare function findDuplicateElements<T>(arr: Array<T>): Array<T>;
 /**
- * foreach 遍历。内部使用 for 遍历；
- *
- * @param obj
- * @param cb
- */
-export declare function foreach(obj: Record<string | number, any>, cb: Function): void;
-/**
  * 合并两个数组；
  * @param arr1 - 数组1
  * @param arr2 - 数组2
  * @param removeRepetition - 是否移除重复元素
  */
 export declare function mergeTwoArray<T>(arr1: Array<T>, arr2: Array<T>, removeRepetition?: boolean): Array<T>;
+/**
+ * 数组扁平化
+ * @param arr
+ * @param childrenKey
+ */
+export declare function flattenArray<T = any>(arr: Array<T>, childrenKey?: string): Array<T>;
+/**
+ * 数组去重
+ * @param arr
+ */
+export declare function unique(arr: any[]): any[];
+/**
+ * 把数组通过某一个字段转换成 map
+ * @param list
+ * @param field
+ */
+export declare function transformListToMap<T>(list: Array<T>, field: string): Record<any, any>;

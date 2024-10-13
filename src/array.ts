@@ -169,6 +169,10 @@ export function calculateArraySum(arr: Array<number> | Array<any>, field?: strin
  * @param arr2
  */
 export function compareArray(arr1: Array<any>, arr2: Array<any>) {
+  if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
+    return false;
+  }
+  
   const len1 = arr1.length;
   const len2 = arr2.length;
   if (len1 === len2 && len1 === 0) {
@@ -229,6 +233,11 @@ export function union<T>(arr1: Array<T>, arr2: Array<T>): Array<T> {
  */
 export function findDuplicateElements<T>(arr: Array<T>): Array<T> {
   const result: Array<T> = [];
+  
+  if (!Array.isArray(arr)) {
+    return [];
+  }
+  
   if (arr.length === 0) {
     return result;
   }
@@ -250,18 +259,6 @@ export function findDuplicateElements<T>(arr: Array<T>): Array<T> {
 }
 
 /**
- * foreach 遍历。内部使用 for 遍历；
- *
- * @param obj
- * @param cb
- */
-export function foreach(obj: Record<string | number, any>, cb: Function): void {
-  Object.keys(obj).forEach((item, index) => {
-    cb(item, obj[item], index, obj);
-  });
-}
-
-/**
  * 合并两个数组；
  * @param arr1 - 数组1
  * @param arr2 - 数组2
@@ -272,8 +269,86 @@ export function mergeTwoArray<T>(
   arr2: Array<T>,
   removeRepetition: boolean = false,
 ): Array<T> {
+  if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
+    return [];
+  }
+  
   if (removeRepetition) {
     return Array.from(new Set([...arr1, ...arr2]));
   }
   return [...arr1, ...arr2];
+}
+
+/**
+ * 数组扁平化
+ * @param arr
+ * @param childrenKey
+ */
+export function flattenArray<T = any>(arr: Array<T>, childrenKey: string = 'children'): Array<T> {
+  let result: Array<T> = [];
+  
+  if (!Array.isArray(arr)) {
+    return result;
+  }
+  
+  arr.forEach((item: any) => {
+    if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+      // 对象类型元素，取出 children 并递归处理，之后去掉 childrenKey 并加入结果
+      const children = item[childrenKey];
+      const newItem = { ...item };
+      delete newItem[childrenKey];
+      result.push(newItem);
+      
+      if (Array.isArray(children)) {
+        result = result.concat(flattenArray(children, childrenKey));
+      }
+    } else if (Array.isArray(item)) {
+      // 如果元素是数组，递归处理
+      result = result.concat(flattenArray(item, childrenKey));
+    } else {
+      // 直接是基本类型的元素
+      result.push(item);
+    }
+  });
+  
+  // 去重逻辑，使用 Set 来存储基本类型和 JSON 序列化后的对象来避免重复
+  return unique(result);
+}
+
+/**
+ * 数组去重
+ * @param arr
+ */
+export function unique(arr: any[]): any[] {
+  if(!Array.isArray(arr)) {
+    return [];
+  }
+  const seen = new Set();
+  return arr.filter(item => {
+    const serialized = typeof item === 'object' ? JSON.stringify(item) : item;
+    if (seen.has(serialized)) {
+      return false;
+    }
+    seen.add(serialized);
+    return true;
+  });
+}
+
+
+/**
+ * 把数组通过某一个字段转换成 map
+ * @param list
+ * @param field
+ */
+export function transformListToMap<T>(list: Array<T>, field: string) {
+  if (Array.isArray(list) && field) {
+    return list.reduce((prev: Record<any, any>, curr) => {
+      const value = (curr as any)[field];
+      if (value) {
+        prev[value] = curr;
+      }
+      return prev;
+    }, {});
+  }
+  return {};
 }
