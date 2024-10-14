@@ -17,7 +17,7 @@
     "test": "jest",
     "docs": "typedoc --options ./scripts/typedocs.js",
     "publish:before": "npm run clean && npm run build",
-    "publish:after": "npm run version && npm publish"
+    "publish:after": "npm version patch && npm publish"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.0",
