@@ -16,7 +16,8 @@
     "prettier": "prettier --write ./src/**/* ./scripts/**/*",
     "test": "jest",
     "docs": "typedoc --options ./scripts/typedocs.js",
-    "publish:npm": "npm run clean && npm run build && git commit -m \"publish before update version\" && npm run version && npm publish"
+    "publish:before": "npm run clean && npm run build",
+    "publish:after": "npm run version && npm publish"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.0",
