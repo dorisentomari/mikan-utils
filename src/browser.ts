@@ -1,4 +1,4 @@
-import { isPlainObject } from './common';
+import {isHTMLElement, isPlainObject} from './common';
 
 /**
  * DOM 选择器
@@ -98,21 +98,6 @@ export function deleteClassName(elem: HTMLElement, name: string): void {
 export function replaceClassName(elem: HTMLElement, newClassName: string, oldClassName: string): void {
   deleteClassName(elem, oldClassName);
   addClassName(elem, newClassName);
-}
-
-/**
- * 判断是否为有效的 HTML 元素
- *
- * @param {any} dom - 要检查的对象。
- * @returns {boolean} 如果是有效的 HTML 元素，则返回 true；否则返回 false。
- *
- * @example
- * ```typescript
- * const isElem = isHTMLElement(someVar);
- * ```
- */
-export function isHTMLElement(dom: any): dom is HTMLElement {
-  return dom instanceof HTMLElement;
 }
 
 /**

@@ -131,3 +131,5 @@ out
 .idea/
 .vs_code/
 .fleet/
+dist/
+coverage/

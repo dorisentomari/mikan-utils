@@ -29,8 +29,6 @@ export function arrayify(value: Array<any> | any): Array<any> {
 /**
  * 计算数组元素的平均值;
  *
- * @remark arr element must be number type, not allow string number like '3';
- *
  *
  * ```typescript
  * // eg. 1
@@ -74,8 +72,6 @@ export function calculateArrayAverage(arr: Array<number> | Array<any>, field?: s
 /**
  * 计算数组元素里的最大值；
  *
- * @remark use JavaScript's `Math.max` method; if one element is string number like `'44'`, it regard `'44'` as number 44 and work; But if one element is `'a'` or `undefined` or `object`, you will get `NaN`;
- *
  *
  * ```typescript
  * // eg. 1
@@ -108,8 +104,6 @@ export function calculateArrayMaxValue(arr: Array<any>): number {
 
 /**
  * 计算数组元素里的最小值；
- *
- * @remark use JavaScript's `Math.min` method; it's like method `calculateArrayMaxValue` @{link};
  *
  *
  * ```typescript

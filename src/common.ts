@@ -236,15 +236,21 @@ export function isValidDate(value: any): boolean {
 export function isError(value: any): boolean {
   return Object.prototype.toString.call(value) === '[object Error]';
 }
-
 /**
- * 检查值是否为 HTML 元素。
- * @param {any} element - 要检查的值。
- * @returns {boolean} - 如果值是 HTML 元素则返回 true，否则返回 false。
+ * 判断是否为有效的 HTML 元素
+ *
+ * @param {any} dom - 要检查的对象。
+ * @returns {boolean} 如果是有效的 HTML 元素，则返回 true；否则返回 false。
+ *
+ * @example
+ * ```typescript
+ * const isElem = isHTMLElement(someVar);
+ * ```
  */
-export function isHTMLElement(element: any): boolean {
-  return element instanceof HTMLElement;
+export function isHTMLElement(dom: any): dom is HTMLElement {
+  return dom instanceof HTMLElement;
 }
+
 
 /**
  * 检查当前环境是否为浏览器。

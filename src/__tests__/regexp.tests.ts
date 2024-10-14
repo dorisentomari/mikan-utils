@@ -5,7 +5,6 @@ describe('测试 isPhone', () => {
     expect(isPhone('13812345678')).toBe(true); // 测试有效手机号
   });
 
-
   test('测试非字符串类型输入', () => {
     expect(isPhone(13812345678)).toBe(true); // 测试数字输入
     expect(isPhone(null)).toBe(false); // 测试 null 输入

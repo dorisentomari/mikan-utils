@@ -43,25 +43,25 @@ export default {
 			preserveModules: true,
 			// 保留 src 目录结构
 			preserveModulesRoot: 'src',
-			sourcemap: true
+			sourcemap: false
 		},
 		{
 			file: 'dist/mikan-utils.cjs.js',
 			format: 'cjs',
 			name: 'mikanUtils',
-			sourcemap: true,
+			sourcemap: false,
 		},
 		{
 			file: 'dist/mikan-utils.esm.js',
 			format: 'esm',
-			sourcemap: true,
+			sourcemap: false,
 		},
 		{
 			file: 'dist/mikan-utils.umd.js',
 			format: 'umd',
 			// UMD 全局变量名
 			name: 'mikanUtils',
-			sourcemap: true,
+			sourcemap: false,
 		},
 	],
 	plugins: plugins
