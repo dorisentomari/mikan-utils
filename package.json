@@ -5,6 +5,9 @@
   "license": "MIT",
   "author": "dorisentomari <dorisentomari@gmail.com>",
   "type": "module",
+  "main": "dist/mikan-utils.cjs.js",
+  "module": "dist/mikan-utils.esm.js",
+  "types": "dist/es/index.d.ts",
   "files": [
     "dist"
   ],

@@ -10,7 +10,9 @@ const plugins = [
 	// 将 CommonJS 模块转换为 ES6
 	commonjs(),
 	// 支持 TypeScript
-	typescript({ tsconfig: './tsconfig.json' }),
+	typescript({
+		tsconfig: './tsconfig.json',
+	}),
 ];
 
 const NODE_ENV = process.env.NODE_ENV;
