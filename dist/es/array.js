@@ -1,5 +1,5 @@
 import { __spreadArray, __assign } from './node_modules/tslib/tslib.es6.js';
-import { isArray, isNumber, isPlainObject } from './common.js';
+import { isArray, isPlainObject, isNumber } from './common.js';
 
 /**
  * 数组化, if value is array, return `value`. if value is not array, return `[value]`;
@@ -58,7 +58,7 @@ function calculateArrayAverage(arr, field) {
         if (isNumber(curr)) {
             prev += curr;
         }
-        else if (isPlainObject(curr) && field) {
+        if (isPlainObject(curr) && field) {
             var value = curr[field];
             if (isNumber(value)) {
                 prev += value;
@@ -146,7 +146,7 @@ function calculateArraySum(arr, field) {
             if (isNumber(curr)) {
                 prev += curr;
             }
-            else if (isPlainObject(curr) && field) {
+            if (isPlainObject(curr) && field) {
                 var value = curr[field];
                 if (isNumber(value)) {
                     prev += value;

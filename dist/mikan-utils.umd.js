@@ -102,7 +102,7 @@
      * @returns {boolean} - 如果值是 NaN 则返回 true，否则返回 false。
      */
     function isNaN(value) {
-        return isNumber(value) && value !== +value;
+        return Number.isNaN(value);
     }
     /**
      * 检查值是否为整数。
@@ -395,7 +395,7 @@
             if (isNumber(curr)) {
                 prev += curr;
             }
-            else if (isPlainObject(curr) && field) {
+            if (isPlainObject(curr) && field) {
                 var value = curr[field];
                 if (isNumber(value)) {
                     prev += value;
@@ -483,7 +483,7 @@
                 if (isNumber(curr)) {
                     prev += curr;
                 }
-                else if (isPlainObject(curr) && field) {
+                if (isPlainObject(curr) && field) {
                     var value = curr[field];
                     if (isNumber(value)) {
                         prev += value;
@@ -683,37 +683,59 @@
     /**
      * DOM 选择器
      *
-     * @param {string} selector - 选择器字符串，支持 ID、类名和标签名。
+     * @param {string | HTMLElement} selector - 选择器字符串，支持 ID、类名、标签名，或直接传入 HTMLElement。
      * @returns {HTMLElement | NodeList | null} 返回匹配的单个元素、NodeList 或 null。
+     *
+     * @example
+     * ```typescript
+     * const element = $selector('#app');
+     * const listItems = $selector('.list-item');
+     * ```
      */
     function $selector(selector) {
         if (!selector) {
             return null;
         }
-        // 使用 querySelector 或 querySelectorAll
-        // @ts-ignore
-        return selector.startsWith('#')
-            ? document.querySelector(selector) // 返回单一元素
-            : document.querySelectorAll(selector); // 返回 NodeList
+        if (isHTMLElement(selector)) {
+            return selector;
+        }
+        if (selector.startsWith('#')) {
+            // @ts-ignore
+            return document.querySelector(selector);
+        }
+        else {
+            return document.querySelectorAll(selector);
+        }
     }
     /**
      * 判断元素是否有某个 class
      *
-     * @param {HTMLElement} elem - 要检查的元素。
+     * @param {HTMLElement} elem - 要检查的 HTML 元素。
      * @param {string} className - 要检查的类名。
      * @returns {boolean} 如果元素具有指定的类名，则返回 true；否则返回 false。
      * @throws {Error} 如果未找到元素，则抛出错误。
+     *
+     * @example
+     * ```typescript
+     * const hasClass = hasClassName(element, 'active');
+     * ```
      */
     function hasClassName(elem, className) {
-        if (!elem)
-            throw new Error("cannot find ".concat(elem, " element"));
+        if (!elem) {
+            throw new Error("Cannot find ".concat(elem, " element"));
+        }
         return elem.classList.contains(className);
     }
     /**
      * 给某个元素添加 class
      *
-     * @param {HTMLElement} elem - 要添加类名的元素。
+     * @param {HTMLElement} elem - 要添加类名的 HTML 元素。
      * @param {string} name - 要添加的类名。
+     *
+     * @example
+     * ```typescript
+     * addClassName(element, 'active');
+     * ```
      */
     function addClassName(elem, name) {
         if (!hasClassName(elem, name)) {
@@ -723,8 +745,13 @@
     /**
      * 删除某个元素的 class
      *
-     * @param {HTMLElement} elem - 要删除类名的元素。
+     * @param {HTMLElement} elem - 要删除类名的 HTML 元素。
      * @param {string} name - 要删除的类名。
+     *
+     * @example
+     * ```typescript
+     * deleteClassName(element, 'active');
+     * ```
      */
     function deleteClassName(elem, name) {
         if (hasClassName(elem, name)) {
@@ -734,77 +761,86 @@
     /**
      * 替换某个元素的 class
      *
-     * @param {HTMLElement} elem - 要操作的元素。
+     * @param {HTMLElement} elem - 要操作的 HTML 元素。
      * @param {string} newClassName - 要添加的新类名。
      * @param {string} oldClassName - 要删除的旧类名。
+     *
+     * @example
+     * ```typescript
+     * replaceClassName(element, 'new-class', 'old-class');
+     * ```
      */
     function replaceClassName(elem, newClassName, oldClassName) {
         deleteClassName(elem, oldClassName);
         addClassName(elem, newClassName);
     }
     /**
-     * 判断是否有效 HTML Element
+     * 判断是否为有效的 HTML 元素
      *
      * @param {any} dom - 要检查的对象。
-     * @returns {boolean} 如果是有效的 HTML Element，则返回 true；否则返回 false。
+     * @returns {boolean} 如果是有效的 HTML 元素，则返回 true；否则返回 false。
+     *
+     * @example
+     * ```typescript
+     * const isElem = isHTMLElement(someVar);
+     * ```
      */
     function isHTMLElement(dom) {
         return dom instanceof HTMLElement;
     }
     /**
-     * 判断是否是指定的 HTMLElement
+     * 判断是否为指定的 HTMLElement 标签
      *
+     * @template T - 元素类型。
      * @param {any} element - 要检查的对象。
      * @param {string} tagName - 要匹配的标签名。
-     * @returns {boolean} 如果元素是指定的 HTML Element，则返回 true；否则返回 false。
+     * @returns {boolean} 如果元素是指定的 HTML 标签，则返回 true；否则返回 false。
+     *
+     * @example
+     * ```typescript
+     * const isDiv = isSpecificHTMLElement<HTMLDivElement>(element, 'div');
+     * ```
      */
     function isSpecificHTMLElement(element, tagName) {
         return isHTMLElement(element) && element.tagName.toLowerCase() === tagName.toLowerCase();
     }
     /**
-     * 通用设置样式
+     * 设置元素样式
      *
      * @param {string | HTMLElement} selector - 选择器字符串或 HTML 元素。
-     * @param {Record<string, string>} [style={}] - 要设置的样式对象，格式为 { 'key': 'value' }。
+     * @param {Record<string, string>} [style={}] - 样式对象，格式为 { 'key': 'value' }。
+     *
+     * @example
+     * ```typescript
+     * setStyle('#app', { color: 'red', fontSize: '16px' });
+     * ```
      */
     function setStyle(selector, style) {
         if (style === void 0) { style = {}; }
-        if (!selector) {
+        var dom = $selector(selector);
+        if (!isHTMLElement(dom)) {
             return;
         }
-        var dom = typeof selector === 'string' ? document.querySelector(selector) : isHTMLElement(selector) ? selector : null;
-        // 如果没有找到有效的 HTML 元素，则返回
-        if (!isHTMLElement(dom))
-            return;
-        // 设置样式
         Object.entries(style).forEach(function (_a) {
             var key = _a[0], value = _a[1];
-            dom.style[key] = value; // 消除 TypeScript 类型警告
+            dom.style[key] = value; // 使用 as any 消除类型警告
         });
     }
     /**
-     * 通过 DOM 设置样式
+     * 设置元素属性
      *
-     * @param {string} selector - 选择器字符串，选择要设置样式的元素。
-     * @param {string} cssText - 要应用的 CSS 样式文本。
-     */
-    function setStyleCssText(selector, cssText) {
-        var domList = $selector(selector);
-        if (Array.isArray(domList)) {
-            domList.forEach(function (domItem) {
-                domItem.style.cssText = cssText;
-            });
-        }
-    }
-    /**
-     * 通用设置属性
-     *
-     * @param {HTMLElement} dom - 要设置属性的元素。
+     * @param {string | HTMLElement} selector - 选择器字符串或 HTML 元素。
      * @param {Record<string, any>} [attributes={}] - 属性对象，格式为 { 'key': 'value' }。
+     *
+     * @example
+     * ```typescript
+     * setDomAttributes('#app', { id: 'newId', 'data-custom': 'value' });
+     * ```
      */
-    function setDomAttributes(dom, attributes) {
+    function setDomAttributes(selector, attributes) {
         if (attributes === void 0) { attributes = {}; }
-        if (!dom) {
+        var dom = $selector(selector);
+        if (!isHTMLElement(dom)) {
             return;
         }
         Object.entries(attributes).forEach(function (_a) {
@@ -813,36 +849,46 @@
         });
     }
     /**
-     * 删除 DOM
+     * 删除 DOM 元素
      *
-     * @param {string} className - 选择器字符串，表示要删除的元素的类名。
+     * @param {string | HTMLElement} selector - 选择器字符串或 HTML 元素，表示要删除的元素。
+     *
+     * @example
+     * ```typescript
+     * removeDom('#app');
+     * ```
      */
-    function removeDom(className) {
-        try {
-            var childDomList = document.querySelectorAll(className.trim());
-            childDomList.forEach(function (childDom) {
-                if (childDom.parentNode) {
-                    childDom.parentNode.removeChild(childDom);
-                }
-            });
+    function removeDom(selector) {
+        var dom = $selector(selector);
+        if (!dom) {
+            return; // 如果没有找到元素，直接返回
         }
-        catch (e) {
-            console.log('e', e);
-        }
+        // 处理 NodeList 或者单个元素
+        var elements = dom instanceof NodeList ? Array.from(dom) : [dom];
+        elements.forEach(function (item) {
+            if (item.parentNode) {
+                item.parentNode.removeChild(item);
+            }
+        });
     }
     /**
-     * 创建 DOM
+     * 创建 DOM 元素
      *
-     * @param {string} elem - 要创建的元素的标签名。
+     * @param {string} elem - 要创建的元素标签名。
      * @param {Record<string, any>} [attributes={}] - 要设置的属性对象，格式为 { 'key': 'value' }。
      * @param {Record<string, string>} [style={}] - 要设置的样式对象，格式为 { 'key': 'value' }。
-     * @returns {HTMLElement | null} 返回创建的元素或 null。
+     * @returns {HTMLElement | null} 返回创建的元素，或 null。
+     *
+     * @example
+     * ```typescript
+     * const newElem = createElement('div', { id: 'newDiv' }, { color: 'red' });
+     * ```
      */
     function createElement(elem, attributes, style) {
         if (attributes === void 0) { attributes = {}; }
         if (style === void 0) { style = {}; }
         if (!elem) {
-            return null;
+            throw new Error('Element name is required');
         }
         var dom = document.createElement(elem);
         if (isPlainObject(attributes)) {
@@ -854,73 +900,56 @@
         return dom;
     }
     /**
-     * 删除 localStorage 里以某个前缀开头的数据
-     *
-     * @param {string} prefix - 要删除的前缀。
-     */
-    function removeLocalStorageByPrefix(prefix) {
-        try {
-            if (!isBrowser()) {
-                Object.keys(localStorage)
-                    .filter(function (key) { return key.startsWith(prefix); })
-                    .forEach(function (key) {
-                    safeRemoveLocalStorage(key);
-                });
-            }
-        }
-        catch (err) {
-            console.error(err);
-        }
-    }
-    /**
-     * 安全的获取 localStorage
+     * 安全获取 localStorage 中的值
      *
      * @param {string} key - 要获取的键。
-     * @returns {any} 返回解析后的值，如果解析失败则返回原始字符串。
+     * @returns {any} 返回解析后的值，如果解析失败，则返回原始字符串。
+     *
+     * @example
+     * ```typescript
+     * const data = safeGetLocalStorage('key');
+     * ```
      */
     function safeGetLocalStorage(key) {
-        var value = localStorage.getItem(key) || '';
+        var value = localStorage.getItem(key);
         try {
-            return JSON.parse(value);
+            if (typeof value === 'string') {
+                // 先检查字符串是否符合 JSON 格式
+                return value.startsWith('{') || value.startsWith('[') ? JSON.parse(value) : value;
+            }
+            return value;
         }
         catch (error) {
-            console.error(error);
             return value; // 返回原始字符串
         }
     }
     /**
-     * 安全的设置 localStorage
+     * 安全设置 localStorage 的值
      *
      * @param {string} key - 要设置的键。
-     * @param {any} value - 要设置的值，可以是对象或其他类型。
-     * @param {string} [removePrefix=''] - 如果设置失败，删除的前缀。
+     * @param {any} value - 要设置的值，可以是对象、数组或原始类型。
+     *
+     * @example
+     * ```typescript
+     * safeSetLocalStorage('key', { a: 1 });
+     * ```
      */
-    function safeSetLocalStorage(key, value, removePrefix) {
-        if (removePrefix === void 0) { removePrefix = ''; }
-        try {
-            var finalValue = typeof value === 'object' ? JSON.stringify(value) : value;
-            localStorage.setItem(key, finalValue);
-        }
-        catch (error) {
-            console.error(error);
-            if (removePrefix) {
-                removeLocalStorageByPrefix(removePrefix);
-                localStorage.setItem(key, value);
-            }
-        }
+    function safeSetLocalStorage(key, value) {
+        var finalValue = (Array.isArray(value) || isPlainObject(value)) ? JSON.stringify(value) : value;
+        localStorage.setItem(key, finalValue);
     }
     /**
-     * 安全的删除 localStorage
+     * 安全删除 localStorage 中的键
      *
      * @param {string} key - 要删除的键。
+     *
+     * @example
+     * ```typescript
+     * safeRemoveLocalStorage('key');
+     * ```
      */
     function safeRemoveLocalStorage(key) {
-        try {
-            localStorage.removeItem(key);
-        }
-        catch (error) {
-            console.error(error);
-        }
+        localStorage.removeItem(key);
     }
 
     var browser = /*#__PURE__*/Object.freeze({
@@ -933,67 +962,67 @@
         isHTMLElement: isHTMLElement,
         isSpecificHTMLElement: isSpecificHTMLElement,
         removeDom: removeDom,
-        removeLocalStorageByPrefix: removeLocalStorageByPrefix,
         replaceClassName: replaceClassName,
         safeGetLocalStorage: safeGetLocalStorage,
         safeRemoveLocalStorage: safeRemoveLocalStorage,
         safeSetLocalStorage: safeSetLocalStorage,
         setDomAttributes: setDomAttributes,
-        setStyle: setStyle,
-        setStyleCssText: setStyleCssText
+        setStyle: setStyle
     });
 
     /**
-     * 转换 CSV 为 JSON
+     * 将 CSV 数据转换为 JSON 格式。
      *
-     * @param data
-     * @param delimiter
+     * @param {string} data - 要转换的 CSV 数据。
+     * @param {string} [delimiter=','] - CSV 数据中使用的分隔符。
+     * @returns {Array<Object>} - 表示 JSON 数据的对象数组。
+     *
+     * @example
+     * const jsonData = CSVtoJSON('name,age\nAlice,30\nBob,25');
+     * // 输出: [{ name: 'Alice', age: '30' }, { name: 'Bob', age: '25' }]
      */
     function CSVtoJSON(data, delimiter) {
         if (data === void 0) { data = ''; }
         if (delimiter === void 0) { delimiter = ','; }
-        if (isString(data)) {
-            if (data.length === 0) {
-                return {};
-            }
-            var firstLineIndex = data.indexOf('\n');
-            var titles_1 = data.slice(0, firstLineIndex).split(delimiter);
-            var restData = data.slice(firstLineIndex + 1);
-            return restData.split('\n').map(function (v) {
-                var values = v.split(delimiter);
-                return titles_1.reduce(function (prev, curr, index) {
-                    prev[curr] = values[index];
-                    return prev;
+        if (isString(data) && data.length > 0) {
+            var _a = data.split('\n'), titlesLine = _a[0], restData = _a.slice(1);
+            var titles_1 = titlesLine.split(delimiter);
+            return restData.map(function (row) {
+                var values = row.split(delimiter);
+                return titles_1.reduce(function (obj, title, index) {
+                    obj[title] = values[index];
+                    return obj;
                 }, {});
             });
         }
-        return {};
+        return [];
     }
     /**
-     * 转换 JSON 为 CSV
+     * 将对象数组转换为 CSV 格式。
      *
-     * @param arr
-     * @param columns
-     * @param delimiter
+     * @param {Array<Object>} arr - 要转换为 CSV 的对象数组。
+     * @param {Array<string>} columns - 要包含在 CSV 中的列。
+     * @param {string} [delimiter=','] - 在 CSV 输出中使用的分隔符。
+     * @returns {string} - 生成的 CSV 字符串。
+     *
+     * @throws {TypeError} - 如果数组中的任何元素不是对象，则抛出错误。
+     *
+     * @example
+     * const csvData = JSONtoCSV([{ name: 'Alice', age: 30 }, { name: 'Bob', age: 25 }], ['name', 'age']);
+     * // 输出: 'name,age\nAlice,30\nBob,25'
      */
     function JSONtoCSV(arr, columns, delimiter) {
         if (arr === void 0) { arr = []; }
         if (columns === void 0) { columns = []; }
         if (delimiter === void 0) { delimiter = ','; }
-        for (var i = 0; i < arr.length; i++) {
-            var item = arr[i];
-            if (!isPlainObject(item)) {
-                throw new TypeError('数组元素必须是对象');
-            }
+        if (arr.some(function (item) { return !isPlainObject(item); })) {
+            throw new TypeError('数组元素必须是对象');
         }
-        return __spreadArray([
-            columns.join(delimiter)
-        ], arr.map(function (obj) {
-            return columns.reduce(function (prev, curr) {
-                return "".concat(prev).concat(prev.length ? delimiter : '').concat(obj[curr]);
-            }, '');
-        }), true).join('\n')
-            .trim();
+        var header = columns.join(delimiter);
+        var rows = arr.map(function (obj) {
+            return columns.map(function (column) { var _a; return (_a = obj[column]) !== null && _a !== void 0 ? _a : ''; }).join(delimiter);
+        });
+        return __spreadArray([header], rows, true).join('\n').trim();
     }
 
     var csv = /*#__PURE__*/Object.freeze({
@@ -1003,28 +1032,34 @@
     });
 
     /**
-     * 把UTC时间转换为本地时间
-     * @param date
+     * 把 UTC 时间转换为本地时间
+     *
+     * @param {number | string} date - 要转换的 UTC 时间，可以是时间戳或日期字符串。
+     * @returns {Date} - 转换后的本地时间 Date 对象。
+     *
+     * @example
+     * const localTime = convertUTCToLocal('2024-10-13T12:00:00Z');
+     * console.log(localTime); // 输出本地时间
      */
     function convertUTCToLocal(date) {
         var dateObj = new Date(date);
-        var newDate = new Date(dateObj.getTime() + dateObj.getTimezoneOffset() * 60 * 1000);
-        var offset = dateObj.getTimezoneOffset() / 60;
-        var hours = dateObj.getHours();
-        newDate.setHours(hours - offset);
-        return newDate;
+        var localTime = new Date(dateObj.getTime() - (dateObj.getTimezoneOffset() * 60 * 1000));
+        return localTime;
     }
     /**
-     * 把本地时间转换为UTC时间
-     * @param date
+     * 把本地时间转换为 UTC 时间
+     *
+     * @param {number | string} date - 要转换的本地时间，可以是时间戳或日期字符串。
+     * @returns {Date} - 转换后的 UTC 时间 Date 对象。
+     *
+     * @example
+     * const utcTime = convertLocalToUTC(new Date());
+     * console.log(utcTime.toISOString()); // 输出 UTC 时间
      */
     function convertLocalToUTC(date) {
         var dateObj = new Date(date);
-        var newDate = new Date(dateObj.getTime() - dateObj.getTimezoneOffset() * 60 * 1000);
-        var offset = dateObj.getTimezoneOffset() / 60;
-        var hours = dateObj.getHours();
-        newDate.setHours(hours + offset);
-        return newDate;
+        var utcTime = new Date(dateObj.getTime() + (dateObj.getTimezoneOffset() * 60 * 1000));
+        return utcTime;
     }
 
     var date = /*#__PURE__*/Object.freeze({
@@ -1035,28 +1070,52 @@
 
     /**
      * 向下整除两个数字
-     * @param a
-     * @param b
+     *
+     * @param {number} a - 被除数。
+     * @param {number} b - 除数。
+     * @returns {number} - a 除以 b 的向下整除结果。
+     *
+     * @example
+     * const result = divFloor(5.7, 2);
+     * console.log(result); // 输出: 2
      */
     function divFloor(a, b) {
+        if (b === 0) {
+            throw new Error('除数不能为零'); // 增加对除数为零的处理
+        }
         return Math.floor(a / b);
     }
     /**
      * 向上整除两个数字
-     * @param a
-     * @param b
+     *
+     * @param {number} a - 被除数。
+     * @param {number} b - 除数。
+     * @returns {number} - a 除以 b 的向上整除结果。
+     *
+     * @example
+     * const result = divCeil(5.2, 2);
+     * console.log(result); // 输出: 3
      */
     function divCeil(a, b) {
+        if (b === 0) {
+            throw new Error('除数不能为零'); // 增加对除数为零的处理
+        }
         return Math.ceil(a / b);
     }
     /**
-     * 计算复利 compound interest
-     * @params {baseValue} 本金
-     * @params {rate} 利率
-     * @params {times} 周期单位，年、月、日等
-     * */
+     * 计算复利
+     *
+     * @param {number} baseValue - 本金。
+     * @param {number} rate - 利率（如 1.05 表示 5%）。
+     * @param {number} times - 计算的周期数。
+     * @returns {number} - 计算后的复利结果，保留两位小数。
+     *
+     * @example
+     * const result = power(1000, 1.05, 5);
+     * console.log(result); // 输出: 1276.28
+     */
     function power(baseValue, rate, times) {
-        times = parseInt(String(times), 10);
+        times = Math.max(0, parseInt(String(times), 10)); // 确保周期数非负
         for (var i = 0; i < times; i++) {
             baseValue *= rate;
         }
@@ -1077,7 +1136,7 @@
      */
     function deepGet(obj, keys) {
         if (obj === void 0) { obj = {}; }
-        if (isEmptyObject(obj)) {
+        if (!isPlainObject(obj)) {
             return null;
         }
         keys = String(keys);
@@ -1098,31 +1157,60 @@
         deepGet: deepGet
     });
 
-    // 随机颜色 16 进制
+    /**
+     * 生成随机颜色（16进制）
+     *
+     * @param {boolean} needUpper - 是否需要将字母转换为大写，默认为 true。
+     * @returns {string} - 生成的随机颜色字符串，以 16 进制表示。
+     *
+     * @example
+     * const color = randomColor();
+     * console.log(color); // 输出: "#AABBCC"
+     */
     function randomColor(needUpper) {
         if (needUpper === void 0) { needUpper = true; }
         var str = '#' + Math.random().toString(16).slice(2, 8);
-        if (needUpper) {
-            return str.toUpperCase();
-        }
-        return str;
+        return needUpper ? str.toUpperCase() : str.toLowerCase(); // 统一返回格式
     }
-    // 随机区间数字
+    /**
+     * 生成随机数字
+     *
+     * @param {number} minNumber - 随机数的最小值，默认为 0。
+     * @param {number} maxNumber - 随机数的最大值，默认为 10000。
+     * @param {boolean} needInt - 是否需要返回整数，默认为 true。
+     * @returns {number} - 生成的随机数。
+     *
+     * @example
+     * const num = randomNumber(1, 100, true);
+     * console.log(num); // 输出: 42
+     */
     function randomNumber(minNumber, maxNumber, needInt) {
         if (minNumber === void 0) { minNumber = 0; }
         if (maxNumber === void 0) { maxNumber = 10000; }
         if (needInt === void 0) { needInt = true; }
-        var res = Math.random() * (maxNumber - minNumber + 1) + minNumber;
-        return needInt ? parseInt(res.toString(), 10) : res;
+        if (minNumber > maxNumber) {
+            throw new Error('最小值不能大于最大值'); // 增加对参数的校验
+        }
+        var res = Math.random() * (maxNumber - minNumber) + minNumber;
+        return needInt ? Math.floor(res) : res; // 使用 Math.floor 生成整数
     }
-    // 随机字符串
+    /**
+     * 生成随机字符串
+     *
+     * @param {number} maxLength - 随机字符串的最大长度，默认为 16。
+     * @returns {string} - 生成的随机字符串。
+     *
+     * @example
+     * const str = randomString(10);
+     * console.log(str); // 输出: "KJQXTPBQDE"
+     */
     function randomString(maxLength) {
         if (maxLength === void 0) { maxLength = 16; }
         var str = '';
-        while (str.length <= maxLength) {
+        while (str.length < maxLength) { // 使用 < 而不是 <=
             str += Math.random().toString(32).substr(2).toUpperCase();
         }
-        return str;
+        return str.slice(0, maxLength); // 确保返回字符串的长度不超过 maxLength
     }
 
     var random = /*#__PURE__*/Object.freeze({
@@ -1132,21 +1220,64 @@
         randomString: randomString
     });
 
-    var phoneRegexp = /^1\d{10}$/g;
+    /**
+     * 手机号正则表达式
+     */
+    var phoneRegexp = /^1\d{10}$/;
+    /**
+     * 校验输入的字符串是否为有效的手机号
+     *
+     * @param {any} phone - 待校验的手机号
+     * @returns {boolean} - 如果是有效的手机号返回 true，否则返回 false
+     *
+     * @example
+     * const valid = isPhone('13812345678');
+     * console.log(valid); // 输出: true
+     */
     function isPhone(phone) {
-        return phoneRegexp.test(phone);
+        return phoneRegexp.test(String(phone)); // 将输入转换为字符串
     }
-    var emailRegexp = /^[0-9a-zA-Z]+@[0-9a-zA-Z\-]+\.[0-9a-zA-Z]+/;
+    /**
+     * 邮箱正则表达式
+     */
+    var emailRegexp = /^[0-9a-zA-Z]+@[0-9a-zA-Z\-]+\.[0-9a-zA-Z]+$/;
+    /**
+     * 校验输入的字符串是否为有效的邮箱地址
+     *
+     * @param {string} email - 待校验的邮箱地址
+     * @returns {boolean} - 如果是有效的邮箱地址返回 true，否则返回 false
+     *
+     * @example
+     * const valid = isEmail('test@example.com');
+     * console.log(valid); // 输出: true
+     */
     function isEmail(email) {
         return emailRegexp.test(email);
     }
+    /**
+     * 字符串是否为数字的正则表达式
+     */
     var stringNumberRegexp = /^\d+$/;
+    /**
+     * 校验输入的字符串是否为有效的数字字符串
+     *
+     * @param {string} str - 待校验的字符串
+     * @returns {boolean} - 如果是有效的数字字符串返回 true，否则返回 false
+     *
+     * @example
+     * const valid = stringNumberRegexp.test('12345');
+     * console.log(valid); // 输出: true
+     */
+    function isStringNumber(str) {
+        return stringNumberRegexp.test(String(str));
+    }
 
     var regexp = /*#__PURE__*/Object.freeze({
         __proto__: null,
         emailRegexp: emailRegexp,
         isEmail: isEmail,
         isPhone: isPhone,
+        isStringNumber: isStringNumber,
         phoneRegexp: phoneRegexp,
         stringNumberRegexp: stringNumberRegexp
     });
@@ -1154,36 +1285,57 @@
     /**
      * 首字母大写
      *
-     * @param word
+     * @param {string} word - 待处理的字符串
+     * @returns {string} - 首字母大写后的字符串
+     *
+     * @example
+     * const result = capitalize('hello');
+     * console.log(result); // 输出: Hello
      */
     function capitalize(word) {
         if (word) {
-            return word.charAt(0).toUpperCase() + word.substr(1);
+            return word.charAt(0).toUpperCase() + word.slice(1);
         }
         return word;
     }
     /**
      * 裁剪字符串左侧空格
-     * @param val
+     *
+     * @param {string} val - 待处理的字符串
+     * @returns {string} - 左侧空格裁剪后的字符串
+     *
+     * @example
+     * const result = trimLeft('   hello');
+     * console.log(result); // 输出: 'hello'
      */
     function trimLeft(val) {
-        return val.replace(/^\s*/gi, '');
+        return val.replace(/^\s+/g, ''); // 使用 \s+ 来匹配一个或多个空格
     }
     /**
      * 裁剪字符串右侧空格
-     * @param val
+     *
+     * @param {string} val - 待处理的字符串
+     * @returns {string} - 右侧空格裁剪后的字符串
+     *
+     * @example
+     * const result = trimRight('hello   ');
+     * console.log(result); // 输出: 'hello'
      */
     function trimRight(val) {
-        return val.replace(/(\s*$)/gi, '');
+        return val.replace(/\s+$/g, ''); // 使用 \s+ 来匹配一个或多个空格
     }
     /**
      * 裁剪字符串两侧空格
-     * @param val
+     *
+     * @param {string} val - 待处理的字符串
+     * @returns {string} - 两侧空格裁剪后的字符串
+     *
+     * @example
+     * const result = trim('   hello   ');
+     * console.log(result); // 输出: 'hello'
      */
     function trim(val) {
-        val = trimLeft(val);
-        val = trimRight(val);
-        return val;
+        return trimLeft(trimRight(val)); // 先裁剪右侧再裁剪左侧
     }
 
     var string = /*#__PURE__*/Object.freeze({
@@ -1195,6 +1347,10 @@
     });
 
     var index = __assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign({}, array), browser), common), csv), date), number), object), random), regexp), string);
+    window.onload = function () {
+        undefined('div', 'color: red;');
+        undefined('#name', 'color: blue;');
+    };
 
     return index;
 

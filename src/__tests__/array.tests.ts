@@ -108,37 +108,32 @@ describe('测试 array', () => {
         { id: 2, children: [] },
         { id: 3, children: [{ id: 31 }, { id: 32, children: [{ id: 321 }, { id: 322 }] }] },
       ]),
-    ).toEqual([
-      { id: 1 },
-      { id: 2 },
-      { id: 3 },
-      { id: 31 },
-      { id: 32 },
-      { id: 321 },
-      { id: 322 },
-    ]);
+    ).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 31 }, { id: 32 }, { id: 321 }, { id: 322 }]);
   });
-  
+
   test('测试 unique', () => {
     // @ts-ignore
     expect(unique()).toEqual([]);
     expect(unique([])).toEqual([]);
-    expect(unique([
-      1,
-      { name: "item1" },
-      { name: "item1" }, // 与上一个对象内容相同
-      2,
-      1, // 重复项
-      [3, 4],
-      [3, 4] // 重复项
-    ])).toEqual([ 1, { name: "item1" }, 2, [3, 4] ]);
-   
+    expect(
+      unique([
+        1,
+        { name: 'item1' },
+        { name: 'item1' }, // 与上一个对象内容相同
+        2,
+        1, // 重复项
+        [3, 4],
+        [3, 4], // 重复项
+      ]),
+    ).toEqual([1, { name: 'item1' }, 2, [3, 4]]);
   });
-  
+
   test('测试 transformListToMap', () => {
     // @ts-ignore
     expect(transformListToMap()).toEqual({});
-    expect(transformListToMap([{id: 1,}, {id: 2}], 'id')).toEqual({1: {id: 1}, 2: {id: 2 } });
-    
+    expect(transformListToMap([{ id: 1 }, { id: 2 }], 'id')).toEqual({
+      1: { id: 1 },
+      2: { id: 2 },
+    });
   });
 });

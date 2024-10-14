@@ -1,6 +1,7 @@
-# mikan-utils
+# mikan-utils [![npm version](https://badge.fury.io/js/mikan-utils.svg)](https://badge.fury.io/js/mikan-utils)
 
 mikan 项目工具库
+
 
 ## 安装
 

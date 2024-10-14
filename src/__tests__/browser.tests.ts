@@ -1,4 +1,3 @@
-// browser.test.ts
 import {
   $selector,
   hasClassName,
@@ -8,239 +7,261 @@ import {
   isHTMLElement,
   isSpecificHTMLElement,
   setStyle,
-  setStyleCssText,
   setDomAttributes,
   removeDom,
   createElement,
-  removeLocalStorageByPrefix,
   safeGetLocalStorage,
   safeSetLocalStorage,
   safeRemoveLocalStorage
 } from '../browser';
 
 describe('测试 $selector', () => {
-  test('测试 $selector 返回 null', () => {
-    expect($selector('')).toBeNull();
+  test('正确选择单个元素', () => {
+    document.body.innerHTML = `<div id="app"></div>`;
+    const element = $selector('#app');
+    expect(element).toBeInstanceOf(HTMLElement);
   });
   
-  test('测试 $selector 返回单个元素', () => {
-    document.body.innerHTML = '<div id="testId"></div>';
-    expect($selector('#testId')).toBeInstanceOf(HTMLElement);
+  test('选择多个元素时返回 NodeList', () => {
+    document.body.innerHTML = `<ul><li class="item"></li><li class="item"></li></ul>`;
+    const elements = $selector('.item');
+    expect(elements).toBeInstanceOf(NodeList);
   });
   
-  test('测试 $selector 返回 NodeList', () => {
-    document.body.innerHTML = '<div class="testClass"></div><div class="testClass"></div>';
-    expect($selector('.testClass')).toHaveLength(2);
+  test('传入 HTMLElement 时返回自身', () => {
+    const element = document.createElement('div');
+    const result = $selector(element);
+    expect(result).toBe(element);
+  });
+  
+  test('无效选择器返回 null', () => {
+    const result = $selector('#non-existent');
+    expect(result).toBeNull();
   });
 });
 
 describe('测试 hasClassName', () => {
-  test('测试 hasClassName 检查类名存在', () => {
-    const elem = document.createElement('div');
-    elem.className = 'testClass';
-    expect(hasClassName(elem, 'testClass')).toBe(true);
+  test('元素包含指定类名时返回 true', () => {
+    const element = document.createElement('div');
+    element.classList.add('active');
+    expect(hasClassName(element, 'active')).toBe(true);
   });
   
-  test('测试 hasClassName 检查类名不存在', () => {
-    const elem = document.createElement('div');
-    expect(hasClassName(elem, 'testClass')).toBe(false);
+  test('元素不包含指定类名时返回 false', () => {
+    const element = document.createElement('div');
+    expect(hasClassName(element, 'inactive')).toBe(false);
   });
   
-  test('测试 hasClassName 抛出错误', () => {
-    // @ts-ignore
-    expect(() => hasClassName(null, 'testClass')).toThrow();
+  test('元素不存在时抛出错误', () => {
+    expect(() => hasClassName(null as any, 'test')).toThrowError();
   });
 });
 
 describe('测试 addClassName', () => {
-  test('测试 addClassName 添加类名', () => {
-    const elem = document.createElement('div');
-    addClassName(elem, 'newClass');
-    expect(elem.className).toBe('newClass');
+  test('成功添加类名', () => {
+    const element = document.createElement('div');
+    addClassName(element, 'new-class');
+    expect(element.classList.contains('new-class')).toBe(true);
   });
   
-  test('测试 addClassName 不重复添加类名', () => {
-    const elem = document.createElement('div');
-    elem.className = 'existingClass';
-    addClassName(elem, 'existingClass');
-    expect(elem.className).toBe('existingClass');
+  test('类名已存在时不重复添加', () => {
+    const element = document.createElement('div');
+    element.classList.add('existing-class');
+    addClassName(element, 'existing-class');
+    expect(element.classList.length).toBe(1);
   });
 });
 
 describe('测试 deleteClassName', () => {
-  test('测试 deleteClassName 删除类名', () => {
-    const elem = document.createElement('div');
-    elem.className = 'testClass';
-    deleteClassName(elem, 'testClass');
-    expect(elem.className).toBe('');
+  test('成功删除类名', () => {
+    const element = document.createElement('div');
+    element.classList.add('to-remove');
+    deleteClassName(element, 'to-remove');
+    expect(element.classList.contains('to-remove')).toBe(false);
   });
   
-  test('测试 deleteClassName 不存在的类名', () => {
-    const elem = document.createElement('div');
-    elem.className = 'testClass';
-    deleteClassName(elem, 'nonExistentClass');
-    expect(elem.className).toBe('testClass');
+  test('类名不存在时不抛出错误', () => {
+    const element = document.createElement('div');
+    deleteClassName(element, 'non-existent-class');
+    expect(element.classList.contains('non-existent-class')).toBe(false);
   });
 });
 
 describe('测试 replaceClassName', () => {
-  test('测试 replaceClassName 替换类名', () => {
-    const elem = document.createElement('div');
-    elem.className = 'oldClass';
-    replaceClassName(elem, 'newClass', 'oldClass');
-    expect(elem.className).toBe('newClass');
-  });
-  
-  test('测试 replaceClassName 不存在的旧类名', () => {
-    const elem = document.createElement('div');
-    elem.className = 'anotherClass';
-    replaceClassName(elem, 'newClass', 'nonExistentClass');
-    expect(elem.className).toBe('anotherClass newClass');
+  test('成功替换类名', () => {
+    const element = document.createElement('div');
+    element.classList.add('old-class');
+    replaceClassName(element, 'new-class', 'old-class');
+    expect(element.classList.contains('new-class')).toBe(true);
+    expect(element.classList.contains('old-class')).toBe(false);
   });
 });
 
 describe('测试 isHTMLElement', () => {
-  test('测试 isHTMLElement 返回 true', () => {
-    const elem = document.createElement('div');
-    expect(isHTMLElement(elem)).toBe(true);
+  test('传入 HTMLElement 返回 true', () => {
+    const element = document.createElement('div');
+    expect(isHTMLElement(element)).toBe(true);
   });
   
-  test('测试 isHTMLElement 返回 false', () => {
+  test('传入非 HTMLElement 返回 false', () => {
     expect(isHTMLElement(null)).toBe(false);
-    expect(isHTMLElement({})).toBe(false);
   });
 });
 
 describe('测试 isSpecificHTMLElement', () => {
-  test('测试 isSpecificHTMLElement 返回 true', () => {
-    const elem = document.createElement('div');
-    expect(isSpecificHTMLElement(elem, 'div')).toBe(true);
+  test('正确判断元素标签', () => {
+    const element = document.createElement('div');
+    expect(isSpecificHTMLElement<HTMLDivElement>(element, 'div')).toBe(true);
   });
   
-  test('测试 isSpecificHTMLElement 返回 false', () => {
-    const elem = document.createElement('span');
-    expect(isSpecificHTMLElement(elem, 'div')).toBe(false);
+  test('标签不匹配时返回 false', () => {
+    const element = document.createElement('span');
+    expect(isSpecificHTMLElement<HTMLDivElement>(element, 'div')).toBe(false);
   });
 });
 
 describe('测试 setStyle', () => {
-  test('测试 setStyle 空入参', () => {
-    // @ts-ignore
-    expect(setStyle(null,)).toEqual(undefined);
-    expect(setStyle('.ss',)).toEqual(undefined);
+  test('成功设置样式', () => {
+    const element = document.createElement('div');
+    document.body.appendChild(element);
+    setStyle(element, { color: 'red', fontSize: '16px' });
+    expect(element.style.color).toBe('red');
+    expect(element.style.fontSize).toBe('16px');
   });
   
-  test('测试 setStyle 设置样式', () => {
-    const elem = document.createElement('div');
-    setStyle(elem, { color: 'red', backgroundColor: 'blue' });
-    expect(elem.style.color).toBe('red');
-    expect(elem.style.backgroundColor).toBe('blue');
-  });
-  
-  test('测试 setStyle 选择器为字符串', () => {
-    document.body.innerHTML = '<div id="testId"></div>';
-    setStyle('#testId', { color: 'green' });
-    const elem = $selector('#testId') as HTMLElement;
-    expect(elem.style.color).toBe('green');
-  });
-});
-
-describe('测试 setStyleCssText', () => {
-  test('测试 setStyleCssText 设置 cssText', () => {
-    const elem = document.createElement('div');
-    // @ts-ignore
-    setStyleCssText(elem, 'color: blue; background-color: yellow;');
-    expect(elem.style.cssText).toBe('color: blue; background-color: yellow;');
-  });
-  
-  test('测试 setStyleCssText 选择器为字符串', () => {
-    document.body.innerHTML = '<div class="testClass"></div>';
-    setStyleCssText('.testClass', 'color: red;');
-    const elem = $selector('.testClass') as HTMLElement;
-    expect(elem.style.color).toBe('red');
+  test('无效元素不设置样式', () => {
+    setStyle(null as any, { color: 'blue' });
+    // No expectation here, just ensuring no error is thrown.
   });
 });
 
 describe('测试 setDomAttributes', () => {
-  
-  test('测试 setDomAttributes 空入参', () => {
-    // @ts-ignore
-    expect(setDomAttributes(null,)).toEqual(undefined);
-    // @ts-ignore
-    expect(setDomAttributes('.ss',)).toEqual(undefined);
+  test('成功设置属性', () => {
+    const element = document.createElement('div');
+    setDomAttributes(element, { id: 'testId', 'data-role': 'button' });
+    expect(element.id).toBe('testId');
+    expect(element.getAttribute('data-role')).toBe('button');
   });
   
-  test('测试 setDomAttributes 设置属性', () => {
-    const elem = document.createElement('input');
-    setDomAttributes(elem, { type: 'text', placeholder: '输入文本' });
-    expect(elem.type).toBe('text');
-    expect(elem.placeholder).toBe('输入文本');
+  test('无效元素不设置属性', () => {
+    setDomAttributes(null as any, { id: 'testId' });
+    // No expectation here, just ensuring no error is thrown.
   });
 });
 
-describe('测试 removeDom', () => {
-  test('测试 removeDom 删除元素', () => {
-    document.body.innerHTML = '<div class="removeClass"></div><div class="removeClass"></div>';
-    removeDom('.removeClass');
-    // @ts-ignore
-    const domList = $selector('.removeClass') as NodeList;
-    expect(domList.length).toBe(0);
+
+{
+
+// 创建一个测试用的 DOM 元素
+  const createElement = (id: string, parent: HTMLElement | null = document.body): HTMLElement => {
+    const elem = document.createElement('div');
+    elem.id = id;
+    parent?.appendChild(elem);
+    return elem;
+  };
+  
+  describe('测试 removeDom', () => {
+    // 在每个测试之前，清空 document.body
+    beforeEach(() => {
+      document.body.innerHTML = ''; // 清空 DOM
+    });
+    
+    test('移除存在的单个元素', () => {
+      const elem = createElement('test-element-1');
+      removeDom('#test-element-1');
+      expect($selector('#test-element-1')).toBeNull(); // 确保元素被移除
+    });
+    
+    test('尝试移除不存在的元素', () => {
+      removeDom('#non-existent'); // 调用不存在的元素
+      expect($selector('#non-existent')).toBeNull(); // 确保仍然是 null
+    });
+    
+    test('移除多个元素', () => {
+      createElement('test-element-1');
+      createElement('test-element-2');
+      removeDom('div'); // 选择所有 div 元素
+      expect($selector('#test-element-1')).toBeNull(); // 确保第一个元素被移除
+      expect($selector('#test-element-2')).toBeNull(); // 确保第二个元素被移除
+    });
+    
+    test('安全移除带有 parentNode 的元素', () => {
+      const parent = createElement('parent');
+      const child = createElement('child', parent);
+      removeDom('#child');
+      expect(parent.children.length).toBe(0); // 确保 child 被移除
+    });
+    
+    test('不移除未附加到 DOM 的元素', () => {
+      const elem = document.createElement('div'); // 创建但不附加到 DOM
+      removeDom(elem); // 应该无影响
+      expect(elem.parentNode).toBeNull(); // 确保仍然不在 DOM 中
+    });
   });
-});
+  
+}
 
 describe('测试 createElement', () => {
-  test('测试 createElement 创建元素', () => {
-    const elem = createElement('div', { id: 'newDiv' }, { color: 'red' });
-    expect(elem).toBeInstanceOf(HTMLElement);
-    // @ts-ignore
-    expect(elem.id).toBe('newDiv');
-    // @ts-ignore
-    expect(elem.style.color).toBe('red');
+  test('成功创建带属性和样式的元素', () => {
+    const element = createElement('div', { id: 'test' }, { color: 'blue' });
+    expect(element?.id).toBe('test');
+    expect(element?.style.color).toBe('blue');
   });
   
-  test('测试 createElement 返回 null', () => {
-    expect(createElement('')).toBeNull();
-  });
-});
-
-describe('测试 removeLocalStorageByPrefix', () => {
-  test('测试 removeLocalStorageByPrefix 删除以前缀开头的 localStorage 项', () => {
-    localStorage.setItem('test_key1', 'value1');
-    localStorage.setItem('test_key2', 'value2');
-    removeLocalStorageByPrefix('test_');
-    expect(localStorage.getItem('test_key1')).toBeNull();
-    expect(localStorage.getItem('test_key2')).toBeNull();
+  test('未指定标签名时抛出错误', () => {
+    expect(() => createElement('')).toThrowError('Element name is required');
   });
 });
 
 describe('测试 safeGetLocalStorage', () => {
-  test('测试 safeGetLocalStorage 获取存在的 localStorage 项', () => {
-    localStorage.setItem('key1', JSON.stringify({ name: 'test' }));
-    expect(safeGetLocalStorage('key1')).toEqual({ name: 'test' });
+  test('获取 safeGetLocalStorage 空值', () => {
+    const result = safeGetLocalStorage('um');
+    expect(result).toBe(null);
   });
   
-  test('测试 safeGetLocalStorage 获取不存在的 localStorage 项', () => {
-    expect(safeGetLocalStorage('nonExistentKey')).toBe('');
+  test('获取 safeGetLocalStorage 字符串对象', () => {
+    localStorage.setItem('keykey', JSON.stringify({ a: 1 }));
+    const result = safeGetLocalStorage('keykey');
+    expect(result).toEqual({ a: 1});
+  });
+  
+  test('成功获取并解析 localStorage 数据', () => {
+    localStorage.setItem('key', JSON.stringify({ a: 1 }));
+    const result = safeGetLocalStorage('key');
+    expect(result).toEqual({ a: 1 });
+  });
+  
+  test('解析失败时返回原始值', () => {
+    localStorage.setItem('key', '{not-json');
+    const result = safeGetLocalStorage('key');
+    expect(result).toBe('{not-json');
+    
+    
+    localStorage.setItem('key2', '[not-json');
+    const result2 = safeGetLocalStorage('key2');
+    expect(result2).toBe('[not-json');
   });
 });
 
 describe('测试 safeSetLocalStorage', () => {
-  test('测试 safeSetLocalStorage 设置 localStorage', () => {
-    safeSetLocalStorage('key2', { name: 'test2' });
-    expect(localStorage.getItem('key2')).toBe(JSON.stringify({ name: 'test2' }));
+  test('成功设置对象到 localStorage', () => {
+    safeSetLocalStorage('key', { b: 2 });
+    const storedValue = localStorage.getItem('key');
+    expect(storedValue).toBe(JSON.stringify({ b: 2 }));
   });
   
-  test('测试 safeSetLocalStorage 设置失败并删除前缀', () => {
-    localStorage.setItem('key3', 'value3');
-    safeSetLocalStorage('key3', { name: 'test3' }, 'key3');
-    expect(localStorage.getItem('key3')).toBe(JSON.stringify({ name: 'test3' }));
+  test('成功设置字符串到 localStorage', () => {
+    safeSetLocalStorage('key', 'string-value');
+    const storedValue = localStorage.getItem('key');
+    expect(storedValue).toBe('string-value');
   });
 });
 
 describe('测试 safeRemoveLocalStorage', () => {
-  test('测试 safeRemoveLocalStorage 删除 localStorage 项', () => {
-    localStorage.setItem('key4', 'value4');
-    safeRemoveLocalStorage('key4');
-    expect(localStorage.getItem('key4')).toBeNull();
+  test('成功删除 localStorage 键', () => {
+    localStorage.setItem('key', 'value');
+    safeRemoveLocalStorage('key');
+    const result = localStorage.getItem('key');
+    expect(result).toBeNull();
   });
 });

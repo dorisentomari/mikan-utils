@@ -11,6 +11,10 @@ import * as regexp from './regexp.js';
 import * as string from './string.js';
 
 var index = __assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign(__assign({}, array), browser), common), csv), date), number), object), random), regexp), string);
+window.onload = function () {
+    undefined('div', 'color: red;');
+    undefined('#name', 'color: blue;');
+};
 
 export { index as default };
 //# sourceMappingURL=index.js.map

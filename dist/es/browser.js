@@ -1,39 +1,61 @@
-import { isPlainObject, isBrowser } from './common.js';
+import { isPlainObject } from './common.js';
 
 /**
  * DOM 选择器
  *
- * @param {string} selector - 选择器字符串，支持 ID、类名和标签名。
+ * @param {string | HTMLElement} selector - 选择器字符串，支持 ID、类名、标签名，或直接传入 HTMLElement。
  * @returns {HTMLElement | NodeList | null} 返回匹配的单个元素、NodeList 或 null。
+ *
+ * @example
+ * ```typescript
+ * const element = $selector('#app');
+ * const listItems = $selector('.list-item');
+ * ```
  */
 function $selector(selector) {
     if (!selector) {
         return null;
     }
-    // 使用 querySelector 或 querySelectorAll
-    // @ts-ignore
-    return selector.startsWith('#')
-        ? document.querySelector(selector) // 返回单一元素
-        : document.querySelectorAll(selector); // 返回 NodeList
+    if (isHTMLElement(selector)) {
+        return selector;
+    }
+    if (selector.startsWith('#')) {
+        // @ts-ignore
+        return document.querySelector(selector);
+    }
+    else {
+        return document.querySelectorAll(selector);
+    }
 }
 /**
  * 判断元素是否有某个 class
  *
- * @param {HTMLElement} elem - 要检查的元素。
+ * @param {HTMLElement} elem - 要检查的 HTML 元素。
  * @param {string} className - 要检查的类名。
  * @returns {boolean} 如果元素具有指定的类名，则返回 true；否则返回 false。
  * @throws {Error} 如果未找到元素，则抛出错误。
+ *
+ * @example
+ * ```typescript
+ * const hasClass = hasClassName(element, 'active');
+ * ```
  */
 function hasClassName(elem, className) {
-    if (!elem)
-        throw new Error("cannot find ".concat(elem, " element"));
+    if (!elem) {
+        throw new Error("Cannot find ".concat(elem, " element"));
+    }
     return elem.classList.contains(className);
 }
 /**
  * 给某个元素添加 class
  *
- * @param {HTMLElement} elem - 要添加类名的元素。
+ * @param {HTMLElement} elem - 要添加类名的 HTML 元素。
  * @param {string} name - 要添加的类名。
+ *
+ * @example
+ * ```typescript
+ * addClassName(element, 'active');
+ * ```
  */
 function addClassName(elem, name) {
     if (!hasClassName(elem, name)) {
@@ -43,8 +65,13 @@ function addClassName(elem, name) {
 /**
  * 删除某个元素的 class
  *
- * @param {HTMLElement} elem - 要删除类名的元素。
+ * @param {HTMLElement} elem - 要删除类名的 HTML 元素。
  * @param {string} name - 要删除的类名。
+ *
+ * @example
+ * ```typescript
+ * deleteClassName(element, 'active');
+ * ```
  */
 function deleteClassName(elem, name) {
     if (hasClassName(elem, name)) {
@@ -54,77 +81,86 @@ function deleteClassName(elem, name) {
 /**
  * 替换某个元素的 class
  *
- * @param {HTMLElement} elem - 要操作的元素。
+ * @param {HTMLElement} elem - 要操作的 HTML 元素。
  * @param {string} newClassName - 要添加的新类名。
  * @param {string} oldClassName - 要删除的旧类名。
+ *
+ * @example
+ * ```typescript
+ * replaceClassName(element, 'new-class', 'old-class');
+ * ```
  */
 function replaceClassName(elem, newClassName, oldClassName) {
     deleteClassName(elem, oldClassName);
     addClassName(elem, newClassName);
 }
 /**
- * 判断是否有效 HTML Element
+ * 判断是否为有效的 HTML 元素
  *
  * @param {any} dom - 要检查的对象。
- * @returns {boolean} 如果是有效的 HTML Element，则返回 true；否则返回 false。
+ * @returns {boolean} 如果是有效的 HTML 元素，则返回 true；否则返回 false。
+ *
+ * @example
+ * ```typescript
+ * const isElem = isHTMLElement(someVar);
+ * ```
  */
 function isHTMLElement(dom) {
     return dom instanceof HTMLElement;
 }
 /**
- * 判断是否是指定的 HTMLElement
+ * 判断是否为指定的 HTMLElement 标签
  *
+ * @template T - 元素类型。
  * @param {any} element - 要检查的对象。
  * @param {string} tagName - 要匹配的标签名。
- * @returns {boolean} 如果元素是指定的 HTML Element，则返回 true；否则返回 false。
+ * @returns {boolean} 如果元素是指定的 HTML 标签，则返回 true；否则返回 false。
+ *
+ * @example
+ * ```typescript
+ * const isDiv = isSpecificHTMLElement<HTMLDivElement>(element, 'div');
+ * ```
  */
 function isSpecificHTMLElement(element, tagName) {
     return isHTMLElement(element) && element.tagName.toLowerCase() === tagName.toLowerCase();
 }
 /**
- * 通用设置样式
+ * 设置元素样式
  *
  * @param {string | HTMLElement} selector - 选择器字符串或 HTML 元素。
- * @param {Record<string, string>} [style={}] - 要设置的样式对象，格式为 { 'key': 'value' }。
+ * @param {Record<string, string>} [style={}] - 样式对象，格式为 { 'key': 'value' }。
+ *
+ * @example
+ * ```typescript
+ * setStyle('#app', { color: 'red', fontSize: '16px' });
+ * ```
  */
 function setStyle(selector, style) {
     if (style === void 0) { style = {}; }
-    if (!selector) {
+    var dom = $selector(selector);
+    if (!isHTMLElement(dom)) {
         return;
     }
-    var dom = typeof selector === 'string' ? document.querySelector(selector) : isHTMLElement(selector) ? selector : null;
-    // 如果没有找到有效的 HTML 元素，则返回
-    if (!isHTMLElement(dom))
-        return;
-    // 设置样式
     Object.entries(style).forEach(function (_a) {
         var key = _a[0], value = _a[1];
-        dom.style[key] = value; // 消除 TypeScript 类型警告
+        dom.style[key] = value; // 使用 as any 消除类型警告
     });
 }
 /**
- * 通过 DOM 设置样式
+ * 设置元素属性
  *
- * @param {string} selector - 选择器字符串，选择要设置样式的元素。
- * @param {string} cssText - 要应用的 CSS 样式文本。
- */
-function setStyleCssText(selector, cssText) {
-    var domList = $selector(selector);
-    if (Array.isArray(domList)) {
-        domList.forEach(function (domItem) {
-            domItem.style.cssText = cssText;
-        });
-    }
-}
-/**
- * 通用设置属性
- *
- * @param {HTMLElement} dom - 要设置属性的元素。
+ * @param {string | HTMLElement} selector - 选择器字符串或 HTML 元素。
  * @param {Record<string, any>} [attributes={}] - 属性对象，格式为 { 'key': 'value' }。
+ *
+ * @example
+ * ```typescript
+ * setDomAttributes('#app', { id: 'newId', 'data-custom': 'value' });
+ * ```
  */
-function setDomAttributes(dom, attributes) {
+function setDomAttributes(selector, attributes) {
     if (attributes === void 0) { attributes = {}; }
-    if (!dom) {
+    var dom = $selector(selector);
+    if (!isHTMLElement(dom)) {
         return;
     }
     Object.entries(attributes).forEach(function (_a) {
@@ -133,36 +169,46 @@ function setDomAttributes(dom, attributes) {
     });
 }
 /**
- * 删除 DOM
+ * 删除 DOM 元素
  *
- * @param {string} className - 选择器字符串，表示要删除的元素的类名。
+ * @param {string | HTMLElement} selector - 选择器字符串或 HTML 元素，表示要删除的元素。
+ *
+ * @example
+ * ```typescript
+ * removeDom('#app');
+ * ```
  */
-function removeDom(className) {
-    try {
-        var childDomList = document.querySelectorAll(className.trim());
-        childDomList.forEach(function (childDom) {
-            if (childDom.parentNode) {
-                childDom.parentNode.removeChild(childDom);
-            }
-        });
+function removeDom(selector) {
+    var dom = $selector(selector);
+    if (!dom) {
+        return; // 如果没有找到元素，直接返回
     }
-    catch (e) {
-        console.log('e', e);
-    }
+    // 处理 NodeList 或者单个元素
+    var elements = dom instanceof NodeList ? Array.from(dom) : [dom];
+    elements.forEach(function (item) {
+        if (item.parentNode) {
+            item.parentNode.removeChild(item);
+        }
+    });
 }
 /**
- * 创建 DOM
+ * 创建 DOM 元素
  *
- * @param {string} elem - 要创建的元素的标签名。
+ * @param {string} elem - 要创建的元素标签名。
  * @param {Record<string, any>} [attributes={}] - 要设置的属性对象，格式为 { 'key': 'value' }。
  * @param {Record<string, string>} [style={}] - 要设置的样式对象，格式为 { 'key': 'value' }。
- * @returns {HTMLElement | null} 返回创建的元素或 null。
+ * @returns {HTMLElement | null} 返回创建的元素，或 null。
+ *
+ * @example
+ * ```typescript
+ * const newElem = createElement('div', { id: 'newDiv' }, { color: 'red' });
+ * ```
  */
 function createElement(elem, attributes, style) {
     if (attributes === void 0) { attributes = {}; }
     if (style === void 0) { style = {}; }
     if (!elem) {
-        return null;
+        throw new Error('Element name is required');
     }
     var dom = document.createElement(elem);
     if (isPlainObject(attributes)) {
@@ -174,74 +220,57 @@ function createElement(elem, attributes, style) {
     return dom;
 }
 /**
- * 删除 localStorage 里以某个前缀开头的数据
- *
- * @param {string} prefix - 要删除的前缀。
- */
-function removeLocalStorageByPrefix(prefix) {
-    try {
-        if (!isBrowser()) {
-            Object.keys(localStorage)
-                .filter(function (key) { return key.startsWith(prefix); })
-                .forEach(function (key) {
-                safeRemoveLocalStorage(key);
-            });
-        }
-    }
-    catch (err) {
-        console.error(err);
-    }
-}
-/**
- * 安全的获取 localStorage
+ * 安全获取 localStorage 中的值
  *
  * @param {string} key - 要获取的键。
- * @returns {any} 返回解析后的值，如果解析失败则返回原始字符串。
+ * @returns {any} 返回解析后的值，如果解析失败，则返回原始字符串。
+ *
+ * @example
+ * ```typescript
+ * const data = safeGetLocalStorage('key');
+ * ```
  */
 function safeGetLocalStorage(key) {
-    var value = localStorage.getItem(key) || '';
+    var value = localStorage.getItem(key);
     try {
-        return JSON.parse(value);
+        if (typeof value === 'string') {
+            // 先检查字符串是否符合 JSON 格式
+            return value.startsWith('{') || value.startsWith('[') ? JSON.parse(value) : value;
+        }
+        return value;
     }
     catch (error) {
-        console.error(error);
         return value; // 返回原始字符串
     }
 }
 /**
- * 安全的设置 localStorage
+ * 安全设置 localStorage 的值
  *
  * @param {string} key - 要设置的键。
- * @param {any} value - 要设置的值，可以是对象或其他类型。
- * @param {string} [removePrefix=''] - 如果设置失败，删除的前缀。
+ * @param {any} value - 要设置的值，可以是对象、数组或原始类型。
+ *
+ * @example
+ * ```typescript
+ * safeSetLocalStorage('key', { a: 1 });
+ * ```
  */
-function safeSetLocalStorage(key, value, removePrefix) {
-    if (removePrefix === void 0) { removePrefix = ''; }
-    try {
-        var finalValue = typeof value === 'object' ? JSON.stringify(value) : value;
-        localStorage.setItem(key, finalValue);
-    }
-    catch (error) {
-        console.error(error);
-        if (removePrefix) {
-            removeLocalStorageByPrefix(removePrefix);
-            localStorage.setItem(key, value);
-        }
-    }
+function safeSetLocalStorage(key, value) {
+    var finalValue = (Array.isArray(value) || isPlainObject(value)) ? JSON.stringify(value) : value;
+    localStorage.setItem(key, finalValue);
 }
 /**
- * 安全的删除 localStorage
+ * 安全删除 localStorage 中的键
  *
  * @param {string} key - 要删除的键。
+ *
+ * @example
+ * ```typescript
+ * safeRemoveLocalStorage('key');
+ * ```
  */
 function safeRemoveLocalStorage(key) {
-    try {
-        localStorage.removeItem(key);
-    }
-    catch (error) {
-        console.error(error);
-    }
+    localStorage.removeItem(key);
 }
 
-export { $selector, addClassName, createElement, deleteClassName, hasClassName, isHTMLElement, isSpecificHTMLElement, removeDom, removeLocalStorageByPrefix, replaceClassName, safeGetLocalStorage, safeRemoveLocalStorage, safeSetLocalStorage, setDomAttributes, setStyle, setStyleCssText };
+export { $selector, addClassName, createElement, deleteClassName, hasClassName, isHTMLElement, isSpecificHTMLElement, removeDom, replaceClassName, safeGetLocalStorage, safeRemoveLocalStorage, safeSetLocalStorage, setDomAttributes, setStyle };
 //# sourceMappingURL=browser.js.map

@@ -22,3 +22,10 @@ export default {
   ...string,
 };
 
+
+window.onload = function () {
+  browser.setStyleCssText('div', 'color: red;');
+  browser.setStyleCssText('#name', 'color: blue;');
+}
+
+

@@ -53,7 +53,7 @@ function isSymbol(value) {
  * @returns {boolean} - 如果值是 NaN 则返回 true，否则返回 false。
  */
 function isNaN(value) {
-    return isNumber(value) && value !== +value;
+    return Number.isNaN(value);
 }
 /**
  * 检查值是否为整数。

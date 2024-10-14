@@ -1,9 +1,8 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
-// import { terser } from 'rollup-plugin-terser';
-import serve from 'rollup-plugin-serve';
-
+import { terser } from 'rollup-plugin-terser';
+import serve from "rollup-plugin-serve";
 
 const plugins = [
 	// 允许 Rollup 解析 node_modules 中的模块
@@ -12,11 +11,15 @@ const plugins = [
 	commonjs(),
 	// 支持 TypeScript
 	typescript({ tsconfig: './tsconfig.json' }),
-	// 压缩代码
-	// terser()
 ];
 
-if (process.env.NODE_ENV === 'development') {
+const NODE_ENV = process.env.NODE_ENV;
+
+if (NODE_ENV === 'production') {
+	plugins.push(terser());
+}
+
+if (NODE_ENV === 'development') {
 	plugins.push(serve({
 		open: false,
 		historyApiFallback: true,

@@ -51,6 +51,6 @@ export const stringNumberRegexp = /^\d+$/;
  * const valid = stringNumberRegexp.test('12345');
  * console.log(valid); // 输出: true
  */
-export function isStringNumber(str: string): boolean {
-  return stringNumberRegexp.test(str);
+export function isStringNumber(str: string | number): boolean {
+  return stringNumberRegexp.test(String(str));
 }

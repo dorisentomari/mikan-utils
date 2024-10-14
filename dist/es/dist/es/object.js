@@ -1,4 +1,4 @@
-import { isPlainObject } from './common.js';
+import { isEmptyObject } from './common.js';
 
 /**
  * 深度获取对象的值
@@ -7,7 +7,7 @@ import { isPlainObject } from './common.js';
  */
 function deepGet(obj, keys) {
     if (obj === void 0) { obj = {}; }
-    if (!isPlainObject(obj)) {
+    if (isEmptyObject(obj)) {
         return null;
     }
     keys = String(keys);

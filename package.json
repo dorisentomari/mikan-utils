@@ -10,15 +10,18 @@
     "dist"
   ],
   "scripts": {
-    "build": "cross-env NODE_ENV=production rollup --config rollup.config.js",
     "clean": "rimraf dist",
     "dev": "cross-env NODE_ENV=development rollup --config rollup.config.js --watch",
+    "build": "cross-env NODE_ENV=production rollup --config rollup.config.js",
+    "build:tampermonkey": "cross-env NODE_ENV=tampermonkey rollup --config rollup.config.js",
     "prettier": "prettier --write ./src/**/*",
-    "test": "jest"
+    "test": "jest",
+    "coverall": "cat ./lcov.info | coveralls"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-replace": "^6.0.1",
     "@rollup/plugin-typescript": "^12.1.0",
     "@types/jest": "^29.5.13",
     "babel-jest": "^29.7.0",

@@ -1,116 +1,174 @@
 /**
  * DOM 选择器
  *
- * @param {string} selector - 选择器字符串，支持 ID、类名和标签名。
+ * @param {string | HTMLElement} selector - 选择器字符串，支持 ID、类名、标签名，或直接传入 HTMLElement。
  * @returns {HTMLElement | NodeList | null} 返回匹配的单个元素、NodeList 或 null。
+ *
+ * @example
+ * ```typescript
+ * const element = $selector('#app');
+ * const listItems = $selector('.list-item');
+ * ```
  */
-export declare function $selector(selector: string): HTMLElement | null | NodeListOf<Element>;
+export declare function $selector(selector: string | HTMLElement): HTMLElement | null | NodeListOf<Element>;
 /**
  * 判断元素是否有某个 class
  *
- * @param {HTMLElement} elem - 要检查的元素。
+ * @param {HTMLElement} elem - 要检查的 HTML 元素。
  * @param {string} className - 要检查的类名。
  * @returns {boolean} 如果元素具有指定的类名，则返回 true；否则返回 false。
  * @throws {Error} 如果未找到元素，则抛出错误。
+ *
+ * @example
+ * ```typescript
+ * const hasClass = hasClassName(element, 'active');
+ * ```
  */
 export declare function hasClassName(elem: HTMLElement, className: string): boolean;
 /**
  * 给某个元素添加 class
  *
- * @param {HTMLElement} elem - 要添加类名的元素。
+ * @param {HTMLElement} elem - 要添加类名的 HTML 元素。
  * @param {string} name - 要添加的类名。
+ *
+ * @example
+ * ```typescript
+ * addClassName(element, 'active');
+ * ```
  */
 export declare function addClassName(elem: HTMLElement, name: string): void;
 /**
  * 删除某个元素的 class
  *
- * @param {HTMLElement} elem - 要删除类名的元素。
+ * @param {HTMLElement} elem - 要删除类名的 HTML 元素。
  * @param {string} name - 要删除的类名。
+ *
+ * @example
+ * ```typescript
+ * deleteClassName(element, 'active');
+ * ```
  */
 export declare function deleteClassName(elem: HTMLElement, name: string): void;
 /**
  * 替换某个元素的 class
  *
- * @param {HTMLElement} elem - 要操作的元素。
+ * @param {HTMLElement} elem - 要操作的 HTML 元素。
  * @param {string} newClassName - 要添加的新类名。
  * @param {string} oldClassName - 要删除的旧类名。
+ *
+ * @example
+ * ```typescript
+ * replaceClassName(element, 'new-class', 'old-class');
+ * ```
  */
 export declare function replaceClassName(elem: HTMLElement, newClassName: string, oldClassName: string): void;
 /**
- * 判断是否有效 HTML Element
+ * 判断是否为有效的 HTML 元素
  *
  * @param {any} dom - 要检查的对象。
- * @returns {boolean} 如果是有效的 HTML Element，则返回 true；否则返回 false。
+ * @returns {boolean} 如果是有效的 HTML 元素，则返回 true；否则返回 false。
+ *
+ * @example
+ * ```typescript
+ * const isElem = isHTMLElement(someVar);
+ * ```
  */
 export declare function isHTMLElement(dom: any): dom is HTMLElement;
 /**
- * 判断是否是指定的 HTMLElement
+ * 判断是否为指定的 HTMLElement 标签
  *
+ * @template T - 元素类型。
  * @param {any} element - 要检查的对象。
  * @param {string} tagName - 要匹配的标签名。
- * @returns {boolean} 如果元素是指定的 HTML Element，则返回 true；否则返回 false。
+ * @returns {boolean} 如果元素是指定的 HTML 标签，则返回 true；否则返回 false。
+ *
+ * @example
+ * ```typescript
+ * const isDiv = isSpecificHTMLElement<HTMLDivElement>(element, 'div');
+ * ```
  */
 export declare function isSpecificHTMLElement<T extends HTMLElement>(element: any, tagName: string): element is T;
 /**
- * 通用设置样式
+ * 设置元素样式
  *
  * @param {string | HTMLElement} selector - 选择器字符串或 HTML 元素。
- * @param {Record<string, string>} [style={}] - 要设置的样式对象，格式为 { 'key': 'value' }。
+ * @param {Record<string, string>} [style={}] - 样式对象，格式为 { 'key': 'value' }。
+ *
+ * @example
+ * ```typescript
+ * setStyle('#app', { color: 'red', fontSize: '16px' });
+ * ```
  */
 export declare function setStyle(selector: string | HTMLElement, style?: Record<string, string>): void;
 /**
- * 通过 DOM 设置样式
+ * 设置元素属性
  *
- * @param {string} selector - 选择器字符串，选择要设置样式的元素。
- * @param {string} cssText - 要应用的 CSS 样式文本。
- */
-export declare function setStyleCssText(selector: string, cssText: string): void;
-/**
- * 通用设置属性
- *
- * @param {HTMLElement} dom - 要设置属性的元素。
+ * @param {string | HTMLElement} selector - 选择器字符串或 HTML 元素。
  * @param {Record<string, any>} [attributes={}] - 属性对象，格式为 { 'key': 'value' }。
- */
-export declare function setDomAttributes(dom: HTMLElement, attributes?: Record<string, any>): void;
-/**
- * 删除 DOM
  *
- * @param {string} className - 选择器字符串，表示要删除的元素的类名。
+ * @example
+ * ```typescript
+ * setDomAttributes('#app', { id: 'newId', 'data-custom': 'value' });
+ * ```
  */
-export declare function removeDom(className: string): void;
+export declare function setDomAttributes(selector: string | HTMLElement, attributes?: Record<string, any>): void;
 /**
- * 创建 DOM
+ * 删除 DOM 元素
  *
- * @param {string} elem - 要创建的元素的标签名。
+ * @param {string | HTMLElement} selector - 选择器字符串或 HTML 元素，表示要删除的元素。
+ *
+ * @example
+ * ```typescript
+ * removeDom('#app');
+ * ```
+ */
+export declare function removeDom(selector: string | HTMLElement): void;
+/**
+ * 创建 DOM 元素
+ *
+ * @param {string} elem - 要创建的元素标签名。
  * @param {Record<string, any>} [attributes={}] - 要设置的属性对象，格式为 { 'key': 'value' }。
  * @param {Record<string, string>} [style={}] - 要设置的样式对象，格式为 { 'key': 'value' }。
- * @returns {HTMLElement | null} 返回创建的元素或 null。
+ * @returns {HTMLElement | null} 返回创建的元素，或 null。
+ *
+ * @example
+ * ```typescript
+ * const newElem = createElement('div', { id: 'newDiv' }, { color: 'red' });
+ * ```
  */
 export declare function createElement(elem: string, attributes?: Record<string, any>, style?: Record<string, string>): HTMLElement | null;
 /**
- * 删除 localStorage 里以某个前缀开头的数据
- *
- * @param {string} prefix - 要删除的前缀。
- */
-export declare function removeLocalStorageByPrefix(prefix: string): void;
-/**
- * 安全的获取 localStorage
+ * 安全获取 localStorage 中的值
  *
  * @param {string} key - 要获取的键。
- * @returns {any} 返回解析后的值，如果解析失败则返回原始字符串。
+ * @returns {any} 返回解析后的值，如果解析失败，则返回原始字符串。
+ *
+ * @example
+ * ```typescript
+ * const data = safeGetLocalStorage('key');
+ * ```
  */
 export declare function safeGetLocalStorage(key: string): any;
 /**
- * 安全的设置 localStorage
+ * 安全设置 localStorage 的值
  *
  * @param {string} key - 要设置的键。
- * @param {any} value - 要设置的值，可以是对象或其他类型。
- * @param {string} [removePrefix=''] - 如果设置失败，删除的前缀。
+ * @param {any} value - 要设置的值，可以是对象、数组或原始类型。
+ *
+ * @example
+ * ```typescript
+ * safeSetLocalStorage('key', { a: 1 });
+ * ```
  */
-export declare function safeSetLocalStorage(key: string, value: any, removePrefix?: string): void;
+export declare function safeSetLocalStorage(key: string, value: any): void;
 /**
- * 安全的删除 localStorage
+ * 安全删除 localStorage 中的键
  *
  * @param {string} key - 要删除的键。
+ *
+ * @example
+ * ```typescript
+ * safeRemoveLocalStorage('key');
+ * ```
  */
 export declare function safeRemoveLocalStorage(key: string): void;
