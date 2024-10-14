@@ -60,7 +60,7 @@ export function isSymbol(value: any): boolean {
  * @returns {boolean} - 如果值是 NaN 则返回 true，否则返回 false。
  */
 export function isNaN(value: any): boolean {
-  return isNumber(value) && value !== +value;
+  return Number.isNaN(value);
 }
 
 /**

@@ -124,6 +124,12 @@ describe('测试 isSpecificHTMLElement', () => {
 });
 
 describe('测试 setStyle', () => {
+  test('测试 setStyle 空入参', () => {
+    // @ts-ignore
+    expect(setStyle(null,)).toEqual(undefined);
+    expect(setStyle('.ss',)).toEqual(undefined);
+  });
+  
   test('测试 setStyle 设置样式', () => {
     const elem = document.createElement('div');
     setStyle(elem, { color: 'red', backgroundColor: 'blue' });
@@ -156,6 +162,14 @@ describe('测试 setStyleCssText', () => {
 });
 
 describe('测试 setDomAttributes', () => {
+  
+  test('测试 setDomAttributes 空入参', () => {
+    // @ts-ignore
+    expect(setDomAttributes(null,)).toEqual(undefined);
+    // @ts-ignore
+    expect(setDomAttributes('.ss',)).toEqual(undefined);
+  });
+  
   test('测试 setDomAttributes 设置属性', () => {
     const elem = document.createElement('input');
     setDomAttributes(elem, { type: 'text', placeholder: '输入文本' });

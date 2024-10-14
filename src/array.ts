@@ -59,7 +59,8 @@ export function calculateArrayAverage(arr: Array<number> | Array<any>, field?: s
   const sum = arr.reduce((prev, curr) => {
     if (isNumber(curr)) {
       prev += curr;
-    } else if (isPlainObject(curr) && field) {
+    }
+    if (isPlainObject(curr) && field) {
       const value = curr[field];
       if (isNumber(value)) {
         prev += value;
@@ -150,7 +151,8 @@ export function calculateArraySum(arr: Array<number> | Array<any>, field?: strin
     return arr.reduce((prev, curr) => {
       if (isNumber(curr)) {
         prev += curr;
-      } else if (isPlainObject(curr) && field) {
+      }
+      if (isPlainObject(curr) && field) {
         const value = curr[field];
         if (isNumber(value)) {
           prev += value;

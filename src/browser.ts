@@ -94,20 +94,23 @@ export function isSpecificHTMLElement<T extends HTMLElement>(element: any, tagNa
  * @param {string | HTMLElement} selector - 选择器字符串或 HTML 元素。
  * @param {Record<string, string>} [style={}] - 要设置的样式对象，格式为 { 'key': 'value' }。
  */
-export function setStyle(selector: string | HTMLElement, style: Record<string, string> = {}): void {
+export function setStyle(selector: string | HTMLElement, style: Record<string, string> = {}): undefined {
   if (!selector) {
-    return;
+    return undefined;
   }
   
   const dom = typeof selector === 'string' ? document.querySelector(selector) : isHTMLElement(selector) ? selector : null;
   
   // 如果没有找到有效的 HTML 元素，则返回
-  if (!isHTMLElement(dom)) return;
+  if (!isHTMLElement(dom)) {
+    return undefined;
+  }
   
   // 设置样式
   Object.entries(style).forEach(([key, value]) => {
     (dom.style as any)[key] = value; // 消除 TypeScript 类型警告
   });
+  return undefined;
 }
 
 /**
@@ -131,14 +134,19 @@ export function setStyleCssText(selector: string, cssText: string): void {
  * @param {HTMLElement} dom - 要设置属性的元素。
  * @param {Record<string, any>} [attributes={}] - 属性对象，格式为 { 'key': 'value' }。
  */
-export function setDomAttributes(dom: HTMLElement, attributes: Record<string, any> = {}): void {
+export function setDomAttributes(dom: HTMLElement, attributes: Record<string, any> = {}): undefined {
   if (!dom) {
-    return;
+    return undefined;
+  }
+  
+  if (!isHTMLElement(dom)) {
+    return undefined;
   }
   
   Object.entries(attributes).forEach(([key, value]) => {
     dom.setAttribute(key, value);
   });
+  return undefined;
 }
 
 /**
