@@ -276,11 +276,13 @@ export function mergeTwoArray<T>(
 }
 
 /**
- * 数组扁平化
- * @param arr
- * @param childrenKey
+ * 数组扁平化，增加 parent 和 level
+ * @param arr - 被扁平化的数组
+ * @param childrenKey - 子元素的 key
+ * @param parent - 父元素
+ * @param level - 层级
  */
-export function flattenArray<T = any>(arr: Array<T>, childrenKey: string = 'children'): Array<T> {
+export function flattenArray<T = any>(arr: Array<T>, childrenKey: string = 'children', parent: T | null = null, level: number = 1): Array<T> {
   let result: Array<T> = [];
   
   if (!Array.isArray(arr)) {
@@ -289,27 +291,28 @@ export function flattenArray<T = any>(arr: Array<T>, childrenKey: string = 'chil
   
   arr.forEach((item: any) => {
     if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
-      // 对象类型元素，取出 children 并递归处理，之后去掉 childrenKey 并加入结果
+      // 处理对象类型元素
       const children = item[childrenKey];
-      const newItem = { ...item };
+      const newItem = { ...item, parent, level };
       delete newItem[childrenKey];
       result.push(newItem);
       
       if (Array.isArray(children)) {
-        result = result.concat(flattenArray(children, childrenKey));
+        result = result.concat(flattenArray(children, childrenKey, newItem, level + 1));
       }
     } else if (Array.isArray(item)) {
-      // 如果元素是数组，递归处理
-      result = result.concat(flattenArray(item, childrenKey));
+      // 处理数组类型元素
+      result = result.concat(flattenArray(item, childrenKey, parent, level));
     } else {
-      // 直接是基本类型的元素
+      // 处理基本类型的元素
       result.push(item);
     }
   });
   
-  // 去重逻辑，使用 Set 来存储基本类型和 JSON 序列化后的对象来避免重复
+  // 返回去重后的结果
   return unique(result);
 }
+
 
 /**
  * 数组去重

@@ -97,18 +97,192 @@ describe('测试 array', () => {
     expect(mergeTwoArray([1, 2, 3], [3, 4, 5], true)).toEqual([1, 2, 3, 4, 5]);
   });
 
-  test('测试 flattenArray', () => {
-    // @ts-ignore
-    expect(flattenArray()).toEqual([]);
-    expect(flattenArray([1, 2, 3])).toEqual([1, 2, 3]);
-    expect(flattenArray([1, 2, 3, [4, 5, [6, 7]]])).toEqual([1, 2, 3, 4, 5, 6, 7]);
-    expect(
-      flattenArray([
-        { id: 1 },
-        { id: 2, children: [] },
-        { id: 3, children: [{ id: 31 }, { id: 32, children: [{ id: 321 }, { id: 322 }] }] },
-      ]),
-    ).toEqual([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 31 }, { id: 32 }, { id: 321 }, { id: 322 }]);
+  describe('flattenArray 扁平化数组方法', () => {
+    test('应该正确扁平化父子结构数组并添加 parent 和 level', () => {
+      const input = [
+        {
+          id: 1,
+          name: '父元素',
+          children: [
+            { id: 2, name: '子元素 1' },
+            { id: 3, name: '子元素 2', children: [{ id: 4, name: '孙元素' }] },
+          ],
+        },
+        { id: 5, name: '单独元素' },
+      ];
+
+      const expected = [
+        { id: 1, name: '父元素', parent: null, level: 1 },
+        {
+          id: 2,
+          name: '子元素 1',
+          parent: { id: 1, name: '父元素', parent: null, level: 1 },
+          level: 2,
+        },
+        {
+          id: 3,
+          name: '子元素 2',
+          parent: { id: 1, name: '父元素', parent: null, level: 1 },
+          level: 2,
+        },
+        {
+          id: 4,
+          name: '孙元素',
+          parent: {
+            id: 3,
+            name: '子元素 2',
+            parent: { id: 1, name: '父元素', parent: null, level: 1 },
+            level: 2,
+          },
+          level: 3,
+        },
+        { id: 5, name: '单独元素', parent: null, level: 1 },
+      ];
+
+      const result = flattenArray(input);
+      expect(result).toEqual(expected);
+    });
+
+    test('应该正确处理深度嵌套的数组结构', () => {
+      const input = [
+        {
+          id: 1,
+          name: 'A',
+          children: [
+            {
+              id: 2,
+              name: 'B',
+              children: [{ id: 3, name: 'C' }],
+            },
+          ],
+        },
+      ];
+
+      const expected = [
+        { id: 1, name: 'A', parent: null, level: 1 },
+        { id: 2, name: 'B', parent: { id: 1, name: 'A', parent: null, level: 1 }, level: 2 },
+        {
+          id: 3,
+          name: 'C',
+          parent: {
+            id: 2,
+            name: 'B',
+            parent: { id: 1, name: 'A', parent: null, level: 1 },
+            level: 2,
+          },
+          level: 3,
+        },
+      ];
+
+      const result = flattenArray(input);
+      expect(result).toEqual(expected);
+    });
+
+    test('应该处理包含基本类型元素的数组', () => {
+      const input = [
+        {
+          id: 1,
+          name: 'A',
+          children: [2, { id: 3, name: 'B' }],
+        },
+        'stringElement',
+      ];
+
+      const expected = [
+        { id: 1, name: 'A', parent: null, level: 1 },
+        2,
+        { id: 3, name: 'B', parent: { id: 1, name: 'A', parent: null, level: 1 }, level: 2 },
+        'stringElement',
+      ];
+
+      const result = flattenArray(input);
+      expect(result).toEqual(expected);
+    });
+
+    test('应该处理空数组', () => {
+      const result = flattenArray([]);
+      expect(result).toEqual([]);
+    });
+
+    test('应该处理无 children 属性的对象', () => {
+      const input = [
+        { id: 1, name: 'A' },
+        { id: 2, name: 'B', children: [{ id: 3, name: 'C' }] },
+      ];
+
+      const expected = [
+        { id: 1, name: 'A', parent: null, level: 1 },
+        { id: 2, name: 'B', parent: null, level: 1 },
+        { id: 3, name: 'C', parent: { id: 2, name: 'B', parent: null, level: 1 }, level: 2 },
+      ];
+
+      const result = flattenArray(input);
+      expect(result).toEqual(expected);
+    });
+
+    test('应该处理非数组的输入并返回空数组', () => {
+      const result = flattenArray(null as any);
+      expect(result).toEqual([]);
+
+      const result2 = flattenArray(undefined as any);
+      expect(result2).toEqual([]);
+
+      const result3 = flattenArray({ id: 1 } as any);
+      expect(result3).toEqual([]);
+    });
+
+    test('应该处理重复数据并去重', () => {
+      const input = [
+        { id: 1, name: 'A', children: [{ id: 2, name: 'B' }] },
+        { id: 1, name: 'A', children: [{ id: 2, name: 'B' }] },
+      ];
+
+      const expected = [
+        { id: 1, name: 'A', parent: null, level: 1 },
+        { id: 2, name: 'B', parent: { id: 1, name: 'A', parent: null, level: 1 }, level: 2 },
+      ];
+
+      const result = flattenArray(input);
+      expect(result).toEqual(expected);
+    });
+
+    test('应该避免循环引用问题，parent 字段不应该出现深拷贝', () => {
+      const input = [
+        {
+          id: 1,
+          name: 'A',
+          children: [{ id: 2, name: 'B' }],
+        },
+      ];
+
+      const result = flattenArray(input);
+      // @ts-ignore
+      expect(result[1].parent).toBe(result[0]); // parent 指针应该是引用
+    });
+
+    test('应该正确处理数组中的嵌套数组元素', () => {
+      const input = [
+        {
+          id: 1,
+          name: 'A',
+          children: [
+            [
+              { id: 2, name: 'B' },
+              { id: 3, name: 'C' },
+            ],
+          ],
+        },
+      ];
+
+      const expected = [
+        { id: 1, name: 'A', parent: null, level: 1 },
+        { id: 2, name: 'B', parent: { id: 1, name: 'A', parent: null, level: 1 }, level: 2 },
+        { id: 3, name: 'C', parent: { id: 1, name: 'A', parent: null, level: 1 }, level: 2 },
+      ];
+
+      const result = flattenArray(input);
+      expect(result).toEqual(expected);
+    });
   });
 
   test('测试 unique', () => {

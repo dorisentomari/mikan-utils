@@ -98,12 +98,11 @@ describe('测试 isHTMLElement', () => {
     const element = document.createElement('div');
     expect(isHTMLElement(element)).toBe(true);
   });
-  
+
   test('传入非 HTMLElement 返回 false', () => {
     expect(isHTMLElement(null)).toBe(false);
   });
 });
-
 
 describe('测试 isSymbol', () => {
   test('测试 isSymbol 返回 true 对于符号', () => {
