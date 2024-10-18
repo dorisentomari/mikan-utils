@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": "dorisentomari <dorisentomari@gmail.com>",
   "type": "commonjs",
-  "module": "dist/mikan-utils.esm.js",
+  "main": "dist/mikan-utils.cjs.js",
   "types": "dist/es/index.d.ts",
   "files": [
     "dist"
@@ -19,7 +19,7 @@
     "test": "jest",
     "docs": "typedoc --options ./scripts/typedocs.js",
     "publish:before": "npm run clean && npm run build",
-    "publish:after": "npm version patch && npm publish"
+    "publish:after": "nrm use npm && npm version patch && npm publish"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.0",
