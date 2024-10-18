@@ -168,7 +168,7 @@ export function compareArray(arr1: Array<any>, arr2: Array<any>) {
   if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
     return false;
   }
-  
+
   const len1 = arr1.length;
   const len2 = arr2.length;
   if (len1 === len2 && len1 === 0) {
@@ -229,11 +229,11 @@ export function union<T>(arr1: Array<T>, arr2: Array<T>): Array<T> {
  */
 export function findDuplicateElements<T>(arr: Array<T>): Array<T> {
   const result: Array<T> = [];
-  
+
   if (!Array.isArray(arr)) {
     return [];
   }
-  
+
   if (arr.length === 0) {
     return result;
   }
@@ -268,7 +268,7 @@ export function mergeTwoArray<T>(
   if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
     return [];
   }
-  
+
   if (removeRepetition) {
     return Array.from(new Set([...arr1, ...arr2]));
   }
@@ -282,13 +282,18 @@ export function mergeTwoArray<T>(
  * @param parent - 父元素
  * @param level - 层级
  */
-export function flattenArray<T = any>(arr: Array<T>, childrenKey: string = 'children', parent: T | null = null, level: number = 1): Array<T> {
+export function flattenArray<T = any>(
+  arr: Array<T>,
+  childrenKey: string = 'children',
+  parent: T | null = null,
+  level: number = 1,
+): Array<T> {
   let result: Array<T> = [];
-  
+
   if (!Array.isArray(arr)) {
     return result;
   }
-  
+
   arr.forEach((item: any) => {
     if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
       // 处理对象类型元素
@@ -296,7 +301,7 @@ export function flattenArray<T = any>(arr: Array<T>, childrenKey: string = 'chil
       const newItem = { ...item, parent, level };
       delete newItem[childrenKey];
       result.push(newItem);
-      
+
       if (Array.isArray(children)) {
         result = result.concat(flattenArray(children, childrenKey, newItem, level + 1));
       }
@@ -308,22 +313,21 @@ export function flattenArray<T = any>(arr: Array<T>, childrenKey: string = 'chil
       result.push(item);
     }
   });
-  
+
   // 返回去重后的结果
   return unique(result);
 }
-
 
 /**
  * 数组去重
  * @param arr
  */
 export function unique(arr: any[]): any[] {
-  if(!Array.isArray(arr)) {
+  if (!Array.isArray(arr)) {
     return [];
   }
   const seen = new Set();
-  return arr.filter(item => {
+  return arr.filter((item) => {
     const serialized = typeof item === 'object' ? JSON.stringify(item) : item;
     if (seen.has(serialized)) {
       return false;
@@ -332,7 +336,6 @@ export function unique(arr: any[]): any[] {
     return true;
   });
 }
-
 
 /**
  * 把数组通过某一个字段转换成 map

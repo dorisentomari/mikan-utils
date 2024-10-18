@@ -115,7 +115,7 @@ export function isNegativeNumber(value: any): boolean {
  */
 export function isBaseType(value: any): boolean {
   const methods = [isNumber, isString, isBoolean, isUndefined, isNull, isSymbol];
-  return methods.some(method => method(value));
+  return methods.some((method) => method(value));
 }
 
 /* 其他数据类型 */
@@ -251,7 +251,6 @@ export function isHTMLElement(dom: any): dom is HTMLElement {
   return dom instanceof HTMLElement;
 }
 
-
 /**
  * 检查当前环境是否为浏览器。
  * @returns {boolean} - 如果当前环境为浏览器则返回 true，否则返回 false。
@@ -265,7 +264,9 @@ export function isBrowser(): boolean {
  * @returns {boolean} - 如果当前环境为 Node.js 则返回 true，否则返回 false。
  */
 export function isNode(): boolean {
-  return typeof process === 'object' && Object.prototype.toString.call(process) === '[object process]';
+  return (
+    typeof process === 'object' && Object.prototype.toString.call(process) === '[object process]'
+  );
 }
 
 /**
@@ -280,15 +281,21 @@ export function isLeapYear(year: number): boolean {
   return year % 400 === 0 || (year % 4 === 0 && year % 100 !== 0);
 }
 
-const ua = window.navigator.userAgent;
-
 /**
  * 当前环境信息映射。
  */
-export const envMap = {
-  isPC: !ua.includes('Android') && !ua.includes('iPhone'),
-  isMobile: ua.includes('Android') || ua.includes('iPhone'),
-  isAndroid: ua.includes('Android'),
-  isIPhone: ua.includes('iPhone'),
-  isIPad: ua.includes('iPad'),
-};
+export const envMap = createEnvMap();
+
+function createEnvMap() {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+  const ua = window.navigator.userAgent;
+  return {
+    isPC: !ua.includes('Android') && !ua.includes('iPhone'),
+    isMobile: ua.includes('Android') || ua.includes('iPhone'),
+    isAndroid: ua.includes('Android'),
+    isIPhone: ua.includes('iPhone'),
+    isIPad: ua.includes('iPad'),
+  };
+}

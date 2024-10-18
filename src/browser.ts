@@ -1,4 +1,4 @@
-import {isHTMLElement, isPlainObject} from './common';
+import { isHTMLElement, isPlainObject } from './common';
 
 /**
  * DOM 选择器
@@ -12,15 +12,17 @@ import {isHTMLElement, isPlainObject} from './common';
  * const listItems = $selector('.list-item');
  * ```
  */
-export function $selector(selector: string | HTMLElement): HTMLElement | null | NodeListOf<Element> {
+export function $selector(
+  selector: string | HTMLElement,
+): HTMLElement | null | NodeListOf<Element> {
   if (!selector) {
     return null;
   }
-  
+
   if (isHTMLElement(selector)) {
     return selector;
   }
-  
+
   if (selector.startsWith('#')) {
     // @ts-ignore
     return document.querySelector(selector);
@@ -95,7 +97,11 @@ export function deleteClassName(elem: HTMLElement, name: string): void {
  * replaceClassName(element, 'new-class', 'old-class');
  * ```
  */
-export function replaceClassName(elem: HTMLElement, newClassName: string, oldClassName: string): void {
+export function replaceClassName(
+  elem: HTMLElement,
+  newClassName: string,
+  oldClassName: string,
+): void {
   deleteClassName(elem, oldClassName);
   addClassName(elem, newClassName);
 }
@@ -113,7 +119,10 @@ export function replaceClassName(elem: HTMLElement, newClassName: string, oldCla
  * const isDiv = isSpecificHTMLElement<HTMLDivElement>(element, 'div');
  * ```
  */
-export function isSpecificHTMLElement<T extends HTMLElement>(element: any, tagName: string): element is T {
+export function isSpecificHTMLElement<T extends HTMLElement>(
+  element: any,
+  tagName: string,
+): element is T {
   return isHTMLElement(element) && element.tagName.toLowerCase() === tagName.toLowerCase();
 }
 
@@ -130,11 +139,11 @@ export function isSpecificHTMLElement<T extends HTMLElement>(element: any, tagNa
  */
 export function setStyle(selector: string | HTMLElement, style: Record<string, string> = {}): void {
   const dom = $selector(selector);
-  
+
   if (!isHTMLElement(dom)) {
     return;
   }
-  
+
   Object.entries(style).forEach(([key, value]) => {
     dom.style[key as any] = value; // 使用 as any 消除类型警告
   });
@@ -151,13 +160,16 @@ export function setStyle(selector: string | HTMLElement, style: Record<string, s
  * setDomAttributes('#app', { id: 'newId', 'data-custom': 'value' });
  * ```
  */
-export function setDomAttributes(selector: string | HTMLElement, attributes: Record<string, any> = {}): void {
+export function setDomAttributes(
+  selector: string | HTMLElement,
+  attributes: Record<string, any> = {},
+): void {
   const dom = $selector(selector);
-  
+
   if (!isHTMLElement(dom)) {
     return;
   }
-  
+
   Object.entries(attributes).forEach(([key, value]) => {
     dom.setAttribute(key, value);
   });
@@ -175,14 +187,14 @@ export function setDomAttributes(selector: string | HTMLElement, attributes: Rec
  */
 export function removeDom(selector: string | HTMLElement): void {
   const dom = $selector(selector);
-  
+
   if (!dom) {
     return; // 如果没有找到元素，直接返回
   }
-  
+
   // 处理 NodeList 或者单个元素
   const elements = dom instanceof NodeList ? Array.from(dom) : [dom];
-  
+
   elements.forEach((item) => {
     if (item.parentNode) {
       item.parentNode.removeChild(item);
@@ -203,21 +215,25 @@ export function removeDom(selector: string | HTMLElement): void {
  * const newElem = createElement('div', { id: 'newDiv' }, { color: 'red' });
  * ```
  */
-export function createElement(elem: string, attributes: Record<string, any> = {}, style: Record<string, string> = {}): HTMLElement | null {
+export function createElement(
+  elem: string,
+  attributes: Record<string, any> = {},
+  style: Record<string, string> = {},
+): HTMLElement | null {
   if (!elem) {
     throw new Error('Element name is required');
   }
-  
+
   const dom = document.createElement(elem);
-  
+
   if (isPlainObject(attributes)) {
     setDomAttributes(dom, attributes);
   }
-  
+
   if (isPlainObject(style)) {
     setStyle(dom, style);
   }
-  
+
   return dom;
 }
 
@@ -257,7 +273,7 @@ export function safeGetLocalStorage(key: string): any {
  * ```
  */
 export function safeSetLocalStorage(key: string, value: any): void {
-  const finalValue = (Array.isArray(value) || isPlainObject(value)) ? JSON.stringify(value) : value;
+  const finalValue = Array.isArray(value) || isPlainObject(value) ? JSON.stringify(value) : value;
   localStorage.setItem(key, finalValue);
 }
 

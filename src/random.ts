@@ -33,7 +33,7 @@ export function randomNumber(
   if (minNumber > maxNumber) {
     throw new Error('最小值不能大于最大值'); // 增加对参数的校验
   }
-  
+
   const res = Math.random() * (maxNumber - minNumber) + minNumber;
   return needInt ? Math.floor(res) : res; // 使用 Math.floor 生成整数
 }
@@ -50,7 +50,8 @@ export function randomNumber(
  */
 export function randomString(maxLength: number = 16): string {
   let str = '';
-  while (str.length < maxLength) { // 使用 < 而不是 <=
+  while (str.length < maxLength) {
+    // 使用 < 而不是 <=
     str += Math.random().toString(32).substr(2).toUpperCase();
   }
   return str.slice(0, maxLength); // 确保返回字符串的长度不超过 maxLength

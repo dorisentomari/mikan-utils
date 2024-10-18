@@ -16,7 +16,6 @@ export * from './random';
 export * from './regexp';
 export * from './string';
 
-
 export default {
   ...array,
   ...browser,
@@ -27,5 +26,3 @@ export default {
   ...regexp,
   ...string,
 };
-
-
